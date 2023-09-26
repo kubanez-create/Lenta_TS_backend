@@ -1,13 +1,16 @@
-from django.urls import include, path, re_path
+from django.urls import include, re_path
 from rest_framework.routers import DefaultRouter
+
+from .views import ShopsViewSet
 
 app_name = 'products'
 
-router = DefaultRouter(trailing_slash=False)
+router = DefaultRouter()
+router.register(r'shops', ShopsViewSet, basename='shops')
 
 urlpatterns = [
     re_path(
-        r'^(?P<version>(v1))/',
+        r'^(?P<version>(v1|v2))/',
         include(router.urls)
     ),
 ]
