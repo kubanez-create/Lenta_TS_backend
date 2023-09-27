@@ -12,7 +12,7 @@ class CustomUser(AbstractUser):
         unique=True,
         blank=False,
     )
-
+    username = None
     objects = UserManager()
 
     USERNAME_FIELD = 'email'

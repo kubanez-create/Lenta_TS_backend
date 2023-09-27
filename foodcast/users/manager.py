@@ -5,7 +5,7 @@ class UserManager(BaseUserManager):
 
     def _create_user(self, email, password, **extra_fields):
         """
-        Creates and saves a User with the given email,and password.
+        Creates and saves a User with the given email and password.
         """
         if not email:
             raise ValueError('Почтовый адрес должен быть указан!')
