@@ -7,6 +7,7 @@ from .models import (
     Product,
     Shops
 )
+from users.models import CustomUser
 
 
 class GroupsAbmin(admin.ModelAdmin):
@@ -46,8 +47,14 @@ class ShopsAdmin(admin.ModelAdmin):
     search_fields = ['title']
 
 
+class UsersAdmin(admin.ModelAdmin):
+    list_display = ('id', 'email', 'password', 'is_superuser')
+    list_filter = ('email',)
+    search_fields = ['email']
+
 admin.site.register(ProductGroup, GroupsAbmin)
 admin.site.register(ProductCategory, CategoriesAdmin)
 admin.site.register(ProductSubCategory, SubCategoriesAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Shops, ShopsAdmin)
+admin.site.register(CustomUser, UsersAdmin)
