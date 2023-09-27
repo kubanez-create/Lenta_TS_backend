@@ -131,4 +131,5 @@ dmypy.json
 .pyre/
 
 logs/*.txt
-*.pyc
+*.pycrequests.http
+*.http
