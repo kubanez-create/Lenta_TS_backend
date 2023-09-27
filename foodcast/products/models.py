@@ -55,7 +55,7 @@ class ProductSubCategory(models.Model):
     """Модель подкатегории товара"""
     title = models.CharField(
         max_length=100,
-        verbose_name='Категория товаров'
+        verbose_name='Подкатегория товаров'
     )
     category = models.ForeignKey(
         ProductCategory,
@@ -65,8 +65,8 @@ class ProductSubCategory(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Категория товара'
-        verbose_name_plural = 'Категории товаров'
+        verbose_name = 'Подкатегория товара'
+        verbose_name_plural = 'Подкатегории товаров'
         ordering = ['title']
         constraints = [
             models.UniqueConstraint(
