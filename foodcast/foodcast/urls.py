@@ -1,12 +1,17 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('products.urls', namespace='products')),
-    path('api/', include('djoser.urls')),
-    path('api/', include('djoser.urls.authtoken')),
+    re_path(
+            r'^api/(?P<version>(v1|v2))/',
+            include('djoser.urls')
+    ),
+    re_path(
+            r'^api/(?P<version>(v1|v2))/',
+            include('djoser.urls.authtoken')
+    )
 ]
 
-print(urlpatterns)
