@@ -1,84 +1,6 @@
 from django.db import models
 
 
-class ProductGroup(models.Model):
-    """Модель групп товаров"""
-    title = models.CharField(
-        max_length=100,
-        verbose_name='Группа товаров'
-    )
-
-    class Meta:
-        verbose_name = 'Группа'
-        verbose_name_plural = 'Группы'
-        ordering = ['title']
-        constraints = [
-            models.UniqueConstraint(
-                fields=['title'],
-                name='unique sku group'
-            )
-        ]
-
-    def __str__(self):
-        return f'Группа товаров - {self.title}'
-
-
-class ProductCategory(models.Model):
-    """Модель категорий товаров группы"""
-    title = models.CharField(
-        max_length=100,
-        verbose_name='Категория товаров'
-    )
-    group = models.ForeignKey(
-        ProductGroup,
-        on_delete=models.CASCADE,
-        related_name='category_group',
-        verbose_name='Категория группы товаров'
-    )
-
-    class Meta:
-        verbose_name = 'Категория товара'
-        verbose_name_plural = 'Категории товаров'
-        ordering = ['title']
-        constraints = [
-            models.UniqueConstraint(
-                fields=['title'],
-                name='unique sku category'
-            )
-        ]
-
-    def __str__(self):
-        return f'Категория - {self.title}'
-
-
-class ProductSubCategory(models.Model):
-    """Модель подкатегории товара"""
-    title = models.CharField(
-        max_length=100,
-        verbose_name='Подкатегория товаров'
-    )
-    category = models.ForeignKey(
-        ProductCategory,
-        on_delete=models.CASCADE,
-        related_name='sub_category',
-        verbose_name='Подкатегория товаров'
-    )
-
-    class Meta:
-        verbose_name = 'Подкатегория товара'
-        verbose_name_plural = 'Подкатегории товаров'
-        ordering = ['title']
-        constraints = [
-            models.UniqueConstraint(
-                fields=['title'],
-                name='unique sku sub_category'
-            )
-        ]
-
-    def __str__(self):
-        return f'Подкатегория - {self.title}'
-
-
 class Product(models.Model):
     """Модель продукта (SKU)"""
     sku = models.CharField(
@@ -89,23 +11,14 @@ class Product(models.Model):
         max_length=20,
         verbose_name='UOM еденица измерения'
     )
-    group = models.ForeignKey(
-        ProductGroup,
-        on_delete=models.CASCADE,
-        related_name='product_group',
-        verbose_name='Группа'
+    group = models.PositiveIntegerField(
+        verbose_name='Группа товаров'
     )
-    category = models.ForeignKey(
-        ProductCategory,
-        on_delete=models.CASCADE,
-        related_name='product_category',
-        verbose_name='Категория'
+    category = models.PositiveIntegerField(
+        verbose_name='Категория товаров'
     )
-    subcategory = models.ForeignKey(
-        ProductSubCategory,
-        on_delete=models.CASCADE,
-        related_name='product_subcategory',
-        verbose_name='Подкатегория'
+    subcategory = models.PositiveIntegerField(
+        verbose_name='Подкатегория товаров'
     )
 
     class Meta:
