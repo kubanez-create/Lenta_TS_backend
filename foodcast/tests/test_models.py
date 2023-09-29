@@ -1,54 +1,24 @@
 from django.test import TestCase
+from django.contrib.auth import get_user_model
+
 from products.models import (
     Product,
-    ProductCategory,
-    ProductGroup,
-    ProductSubCategory,
     Shops,
 )
 
 
-class ProductGroupModelTest(TestCase):
-    def test_str_representation(self):
-        group = ProductGroup(title="Test Group")
-        self.assertEqual(str(group), "Группа товаров - Test Group")
-
-
-class ProductCategoryModelTest(TestCase):
-    def test_str_representation(self):
-        group = ProductGroup(title="Test Group")
-        category = ProductCategory(title="Test Category", group=group)
-        self.assertEqual(str(category), "Категория - Test Category")
-
-
-class ProductSubCategoryModelTest(TestCase):
-    def test_str_representation(self):
-        group = ProductGroup(title="Test Group")
-        category = ProductCategory(title="Test Category", group=group)
-        subcategory = ProductSubCategory(
-            title="Test Subcategory",
-            category=category
-        )
-        self.assertEqual(str(subcategory), "Подкатегория - Test Subcategory")
-
+User = get_user_model()
 
 class ProductModelTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        group = ProductGroup.objects.create(title="Test Group")
-        category = ProductCategory.objects.create(
-            title="Test Category", group=group
-        )
-        subcategory = ProductSubCategory.objects.create(
-            title="Test Subcategory", category=category
-        )
         cls.product = Product.objects.create(
-            sku="TEST001",
-            uom="Each",
-            group=group,
-            category=category,
-            subcategory=subcategory,
+            sku="fd064933250b0bfe4f926b867b0a5ec8",
+            uom="17",
+            group="c74d97b01eae257e44aa9d5bade97baf",
+            category="1bc0249a6412ef49b07fe6f62e6dc8de",
+            subcategory="ca34f669ae367c87f0e75dcae0f61ee5",
         )
 
     def test_verbose_name(self):
@@ -70,7 +40,7 @@ class ProductModelTest(TestCase):
     def test_str_representation(self):
         self.assertEqual(
             str(ProductModelTest.product),
-            "SKU - TEST001, ед. изм - Each"
+            "SKU - fd064933250b0bfe4f926b867b0a5ec8, ед. изм - 17"
         )
 
 
@@ -79,12 +49,12 @@ class ShopsModelTest(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.shop = Shops.objects.create(
-            title="Test Shop",
-            city="Test City",
-            division="Test Division",
+            title="1aa057313c28fa4a40c5bc084b11d276",
+            city="1587965fb4d4b5afe8428a4a024feb0d",
+            division="81b4dd343f5880df806d4c5d4a846c64",
             type_format=1,
             loc=1,
-            size=100,
+            size=19,
             is_active=True,
         )
 
@@ -108,5 +78,8 @@ class ShopsModelTest(TestCase):
     def test_str_representation(self):
         self.assertEqual(
             str(ShopsModelTest.shop),
-            "Магазин Test Shop, г. Test City, статус - True",
+            (
+                "Магазин 1aa057313c28fa4a40c5bc084b11d276, г. "
+                "1587965fb4d4b5afe8428a4a024feb0d, статус - True"
+            ),
         )

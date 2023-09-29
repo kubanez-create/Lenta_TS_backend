@@ -1,20 +1,25 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
+from djoser.views import TokenCreateView
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+
+from users.views import CustomTokenDestroyView
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('products.urls', namespace='products')),
     re_path(
-            r'^api/(?P<version>(v1|v2))/',
-            include('djoser.urls')
+            r'^api/(?P<version>(v1|v2))/auth/token/login/?$',
+            TokenCreateView.as_view(),
+            name='login'
     ),
     re_path(
-            r'^api/(?P<version>(v1|v2))/',
-            include('djoser.urls.authtoken')
+            r'^api/(?P<version>(v1|v2))/auth/token/logout/?$',
+            CustomTokenDestroyView.as_view(),
+            name='logout'
     )
 ]
 

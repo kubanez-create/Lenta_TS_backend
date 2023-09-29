@@ -1,11 +1,13 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+
 
 from .models import (
     Product,
     Shops
 )
 from users.models import CustomUser
-
+from users.admin_forms import UserChangeForm, UserCreationForm
 
 class ProductAdmin(admin.ModelAdmin):
     list_filter = ('category', 'group', 'subcategory')
@@ -27,11 +29,25 @@ class ShopsAdmin(admin.ModelAdmin):
     search_fields = ['title']
 
 
-class UsersAdmin(admin.ModelAdmin):
+class UsersAdmin(BaseUserAdmin):
+    form = UserChangeForm
+    add_form = UserCreationForm
     list_display = ('id', 'email', 'password', 'is_superuser')
     list_filter = ('email',)
     search_fields = ['email']
-
+    ordering = ('email',)
+    fieldsets = [
+        (None, {"fields": ["email", "password"]}),
+    ]
+    add_fieldsets = [
+        (
+            None,
+            {
+                "classes": ["wide"],
+                "fields": ["email", "password"],
+            },
+        ),
+    ]
 
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Shops, ShopsAdmin)
