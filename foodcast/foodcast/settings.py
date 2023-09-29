@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'django_filters',
     'products.apps.ProductsConfig',
     'users.apps.UsersConfig',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
