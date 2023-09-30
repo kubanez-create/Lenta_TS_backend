@@ -2,22 +2,25 @@ from django.db import models
 
 
 class Product(models.Model):
-    """Модель продукта (SKU)"""
+    """Модель продукта (SKU)."""
     sku = models.CharField(
-        max_length=100,
-        verbose_name='SKU продукта'
+        max_length=40,
+        verbose_name='SKU продукта',
+        primary_key=True,
     )
-    uom = models.CharField(
-        max_length=20,
+    uom = models.PositiveIntegerField(
         verbose_name='UOM еденица измерения'
     )
-    group = models.PositiveIntegerField(
+    group = models.CharField(
+        max_length=40,
         verbose_name='Группа товаров'
     )
-    category = models.PositiveIntegerField(
+    category =models.CharField(
+        max_length=40,
         verbose_name='Категория товаров'
     )
-    subcategory = models.PositiveIntegerField(
+    subcategory = models.CharField(
+        max_length=40,
         verbose_name='Подкатегория товаров'
     )
 
@@ -37,10 +40,11 @@ class Product(models.Model):
 
 
 class Shops(models.Model):
-    """Модель магазинов"""
+    """Модель магазинов."""
     title = models.CharField(
-        max_length=100,
-        verbose_name='Название'
+        max_length=60,
+        verbose_name='Название',
+        primary_key=True,
     )
     city = models.CharField(
         max_length=60,

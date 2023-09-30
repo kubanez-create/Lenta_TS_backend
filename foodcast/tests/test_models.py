@@ -27,9 +27,9 @@ class ProductModelTest(TestCase):
         field_verboses = {
             "sku": "SKU продукта",
             "uom": "UOM еденица измерения",
-            "group": "Группа",
-            "category": "Категория",
-            "subcategory": "Подкатегория",
+            "group": "Группа товаров",
+            "category": "Категория товаров",
+            "subcategory": "Подкатегория товаров",
         }
         for field, expected_value in field_verboses.items():
             with self.subTest(field=field):
@@ -41,6 +41,11 @@ class ProductModelTest(TestCase):
         self.assertEqual(
             str(ProductModelTest.product),
             "SKU - fd064933250b0bfe4f926b867b0a5ec8, ед. изм - 17"
+        )
+    def sku_id_a_primary_key(self):
+        self.assertEqual(
+            ProductModelTest.product.pk,
+            "fd064933250b0bfe4f926b867b0a5ec8"
         )
 
 
@@ -82,4 +87,10 @@ class ShopsModelTest(TestCase):
                 "Магазин 1aa057313c28fa4a40c5bc084b11d276, г. "
                 "1587965fb4d4b5afe8428a4a024feb0d, статус - True"
             ),
+        )
+
+    def sku_id_a_primary_key(self):
+        self.assertEqual(
+            ShopsModelTest.shop.pk,
+            "1aa057313c28fa4a40c5bc084b11d276"
         )
