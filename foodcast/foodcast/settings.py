@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'django_filters',
     'products.apps.ProductsConfig',
     'users.apps.UsersConfig',
+    'core.apps.CoreConfig',
     'django_celery_beat',
 ]
 
