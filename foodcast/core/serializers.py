@@ -7,7 +7,7 @@ from products.models import Sales, DataPoint
 class DataPointSerializer(serializers.ModelSerializer):
     class Meta:
         model = DataPoint
-        fields = "__all__"
+        exclude = ["id"]
 
 
 class SalesSerializer(serializers.ModelSerializer):

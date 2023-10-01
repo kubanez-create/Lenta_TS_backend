@@ -12,12 +12,11 @@ User = get_user_model()
 
 class SalesURLsTests(TestCase):
     """Class for testing /sales url."""
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.sale_obj = Sales.objects.create(
-            
-        )
+        cls.sale_obj = Sales.objects.create()
 
     def setUp(self):
         self.guest_client = Client()

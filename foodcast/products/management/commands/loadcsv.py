@@ -44,7 +44,7 @@ class Command(BaseCommand):
                             uom=data_to_insert.get("pr_uom_id"),
                             group=data_to_insert.get("pr_group_id"),
                             category=data_to_insert.get("pr_cat_id"),
-                            subcategory=data_to_insert.get("pr_subcat_id")
+                            subcategory=data_to_insert.get("pr_subcat_id"),
                         )
                     elif command == "shop":
                         model.objects.create(
@@ -58,8 +58,7 @@ class Command(BaseCommand):
                         )
 
             self.stdout.write(
-                self.style.SUCCESS(
-                    'Successfully loaded the file "%s"' % filename)
+                self.style.SUCCESS('Successfully loaded the file "%s"' % filename)
             )
         except IOError as ex:
             raise CommandError("File '%s' does not exist" % filename) from ex

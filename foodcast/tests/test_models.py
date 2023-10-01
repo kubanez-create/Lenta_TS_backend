@@ -9,6 +9,7 @@ from products.models import (
 
 User = get_user_model()
 
+
 class ProductModelTest(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -40,12 +41,12 @@ class ProductModelTest(TestCase):
     def test_str_representation(self):
         self.assertEqual(
             str(ProductModelTest.product),
-            "SKU - fd064933250b0bfe4f926b867b0a5ec8, ед. изм - 17"
+            "SKU - fd064933250b0bfe4f926b867b0a5ec8, ед. изм - 17",
         )
+
     def sku_id_a_primary_key(self):
         self.assertEqual(
-            ProductModelTest.product.pk,
-            "fd064933250b0bfe4f926b867b0a5ec8"
+            ProductModelTest.product.pk, "fd064933250b0bfe4f926b867b0a5ec8"
         )
 
 
@@ -90,10 +91,8 @@ class ShopsModelTest(TestCase):
         )
 
     def sku_id_a_primary_key(self):
-        self.assertEqual(
-            ShopsModelTest.shop.pk,
-            "1aa057313c28fa4a40c5bc084b11d276"
-        )
+        self.assertEqual(ShopsModelTest.shop.pk, "1aa057313c28fa4a40c5bc084b11d276")
+
 
 class DataPointModelTest(TestCase):
     ...
