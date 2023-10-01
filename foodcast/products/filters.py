@@ -1,4 +1,5 @@
 import django_filters
+from django.forms.fields import MultipleChoiceField
 from django_filters import FilterSet
 from rest_framework.exceptions import NotFound
 
@@ -33,3 +34,18 @@ class ShopFilter(FilterSet):
             'size',
             'is_active'
         ]
+
+class MultipleField(MultipleChoiceField):
+    def valid_value(self, value):
+        return True
+
+
+class MultipleFilter(django_filters.MultipleChoiceFilter):
+    field_class = MultipleField
+
+
+class SalesFilter(FilterSet):
+    store = MultipleFilter(field_name="store")
+    group = MultipleFilter(field_name="SKU__group")
+    category = MultipleFilter(field_name="SKU__category")
+    subcategory = MultipleFilter(field_name="SKU__subcategory")

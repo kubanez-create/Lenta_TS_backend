@@ -6,6 +6,7 @@ from .manager import UserManager
 
 class CustomUser(AbstractUser):
     """User's custom model."""
+
     email = models.EmailField(
         verbose_name="Почтовый адрес",
         max_length=254,
@@ -15,7 +16,7 @@ class CustomUser(AbstractUser):
     username = None
     objects = UserManager()
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     def __str__(self):
