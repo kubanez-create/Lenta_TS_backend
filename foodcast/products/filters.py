@@ -45,10 +45,7 @@ class MultipleFilter(django_filters.MultipleChoiceFilter):
 
 
 class SalesFilter(FilterSet):
-    # store = django_filters.ModelChoiceFilter(queryset=Shops.objects.all())
-    # group = django_filters.ModelChoiceFilter(field_name="SKU__group", to_field_name="group")
-    # category = django_filters.ModelChoiceFilter(field_name="SKU__category")
-    # subcategory = django_filters.ModelChoiceFilter(field_name="SKU__subcategory")
+    store = MultipleFilter(field_name="store")
     group = MultipleFilter(field_name="SKU__group")
     category = MultipleFilter(field_name="SKU__category")
     subcategory = MultipleFilter(field_name="SKU__subcategory")
