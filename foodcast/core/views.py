@@ -15,9 +15,7 @@ class SalesView(ListAPIView):
     """
 
     serializer_class = SalesSerializer
-    filter_backends = [
-        DjangoFilterBackend,
-    ]
+    filter_backends = [DjangoFilterBackend]
     filterset_class = SalesFilter
     permission_classes = [IsAuthenticated]
     queryset = Sales.objects.all()
