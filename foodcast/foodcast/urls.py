@@ -11,6 +11,7 @@ from users.views import CustomTokenDestroyView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('products.urls', namespace='products')),
+    path('api/', include('core.urls', namespace='core')),
     re_path(
             r'^api/(?P<version>(v1|v2))/auth/token/login/?$',
             TokenCreateView.as_view(),

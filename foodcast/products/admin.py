@@ -4,7 +4,9 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from .models import (
     Product,
-    Shops
+    Shops,
+    Sales,
+    DataPoint
 )
 from users.models import CustomUser
 from users.admin_forms import UserChangeForm, UserCreationForm
@@ -29,6 +31,9 @@ class ShopsAdmin(admin.ModelAdmin):
     search_fields = ['title']
 
 
+class SalesAdmin(admin.ModelAdmin):
+    list_display = ("store", "SKU")
+
 class UsersAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
@@ -51,4 +56,6 @@ class UsersAdmin(BaseUserAdmin):
 
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Shops, ShopsAdmin)
+admin.site.register(Sales, SalesAdmin)
 admin.site.register(CustomUser, UsersAdmin)
+admin.site.register(DataPoint)

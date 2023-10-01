@@ -94,3 +94,6 @@ class ShopsModelTest(TestCase):
             ShopsModelTest.shop.pk,
             "1aa057313c28fa4a40c5bc084b11d276"
         )
+
+class DataPointModelTest(TestCase):
+    ...
