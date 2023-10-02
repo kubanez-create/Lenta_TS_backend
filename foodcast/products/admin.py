@@ -29,6 +29,8 @@ class ShopsAdmin(admin.ModelAdmin):
 
 class SalesAdmin(admin.ModelAdmin):
     list_display = ("store", "SKU")
+    search_fields = ["store"]
+    list_filter = ("store",)
 
 
 class UsersAdmin(BaseUserAdmin):
