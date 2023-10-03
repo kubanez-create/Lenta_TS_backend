@@ -1,10 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-
-
-from .models import Product, Shops, Sales, DataPoint
-from users.models import CustomUser
 from users.admin_forms import UserChangeForm, UserCreationForm
+from users.models import CustomUser
+
+from .models import DataPoint, Product, Sales, Shops
 
 
 class ProductAdmin(admin.ModelAdmin):

@@ -5,8 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .filters import ShopFilter
-from .models import Shops, Product
-from .serializers import ShopsSerializer, ProductSerializer
+from .models import Product, Shops
+from .serializers import ProductSerializer, ShopsSerializer
 
 
 @action(detail=True, methods=['get'])

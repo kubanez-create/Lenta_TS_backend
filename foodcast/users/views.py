@@ -1,7 +1,7 @@
-from djoser.views import TokenDestroyView
-from rest_framework.response import Response
 from djoser import utils
+from djoser.views import TokenDestroyView
 from rest_framework import status
+from rest_framework.response import Response
 
 
 class CustomTokenDestroyView(TokenDestroyView):

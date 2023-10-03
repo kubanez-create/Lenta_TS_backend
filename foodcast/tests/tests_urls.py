@@ -2,10 +2,9 @@ from datetime import datetime
 from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
-from django.test import Client, TestCase
 from django.core.cache import cache
-
-from products.models import Product, Sales, Shops, DataPoint
+from django.test import Client, TestCase
+from products.models import DataPoint, Product, Sales, Shops
 
 User = get_user_model()
 

@@ -1,11 +1,6 @@
-from django.test import TestCase
 from django.contrib.auth import get_user_model
-
-from products.models import (
-    Product,
-    Shops,
-)
-
+from django.test import TestCase
+from products.models import Product, Shops
 
 User = get_user_model()
 

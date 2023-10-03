@@ -35,8 +35,7 @@ class SalesURLsTests(TestCase):
             is_active=True,
         )
         cls.sale_obj = Sales.objects.create(
-            store=SalesURLsTests.shop,
-            SKU=SalesURLsTests.product
+            store=SalesURLsTests.shop, SKU=SalesURLsTests.product
         )
         cls.dp1 = DataPoint.objects.create(
             date=datetime.fromisocalendar(2023, 40, 3),
@@ -45,7 +44,7 @@ class SalesURLsTests(TestCase):
             sales_units_promo=3,
             sales_rub=3433,
             sales_rub_promo=34,
-            sale=SalesURLsTests.sale_obj
+            sale=SalesURLsTests.sale_obj,
         )
         cls.dp2 = DataPoint.objects.create(
             date=datetime.fromisocalendar(2023, 40, 4),
@@ -54,7 +53,7 @@ class SalesURLsTests(TestCase):
             sales_units_promo=1,
             sales_rub=376,
             sales_rub_promo=34,
-            sale=SalesURLsTests.sale_obj
+            sale=SalesURLsTests.sale_obj,
         )
         cls.dp3 = DataPoint.objects.create(
             date=datetime.fromisocalendar(2023, 40, 5),
@@ -63,7 +62,7 @@ class SalesURLsTests(TestCase):
             sales_units_promo=0,
             sales_rub=78134,
             sales_rub_promo=0,
-            sale=SalesURLsTests.sale_obj
+            sale=SalesURLsTests.sale_obj,
         )
 
     def setUp(self):
@@ -75,46 +74,39 @@ class SalesURLsTests(TestCase):
     def test_sales_view_returns_correct_obj_without_filters(self):
         """Запрос на /sales без фильтров возвращает корректный объект."""
         response = self.authorized_client.get(
-            reverse('core:sales',
-            kwargs={'version': 'v1'})
+            reverse("core:sales", kwargs={"version": "v1"})
         )
         response_json = json.loads(response.content)[0]
-        self.assertEqual(response_json['store'],
-                         SalesURLsTests.shop.title)
-        self.assertEqual(response_json['SKU'],
-                         SalesURLsTests.product.sku)
+        self.assertEqual(response_json["store"], SalesURLsTests.shop.title)
+        self.assertEqual(response_json["SKU"], SalesURLsTests.product.sku)
 
     def test_sales_view_returns_correct_obj_with_store_filter(self):
         """Запрос на /sales с фильтром на ТЦ возвращает корректный объект."""
         response = self.authorized_client.get(
-            reverse('core:sales',
-            kwargs={'version': 'v1'}) + f"store={SalesURLsTests.shop.title}"
+            reverse("core:sales", kwargs={"version": "v1"})
+            + f"store={SalesURLsTests.shop.title}"
         )
         response_json = json.loads(response.content)[0]
-        self.assertEqual(response_json['store'],
-                         SalesURLsTests.shop.title)
-        self.assertEqual(response_json['SKU'],
-                         SalesURLsTests.product.sku)
+        self.assertEqual(response_json["store"], SalesURLsTests.shop.title)
+        self.assertEqual(response_json["SKU"], SalesURLsTests.product.sku)
 
     def test_sales_view_returns_correct_obj_with_group_filter(self):
         """Запрос на /sales с фильтром по группе выдает корректный объект."""
         response = self.authorized_client.get(
-            reverse('core:sales',
-            kwargs={'version': 'v1'}) + f"?group={SalesURLsTests.product.group}"
+            reverse("core:sales", kwargs={"version": "v1"})
+            + f"?group={SalesURLsTests.product.group}"
         )
         response_json = json.loads(response.content)[0]
-        self.assertEqual(response_json['SKU'],
-                         SalesURLsTests.product.sku)
+        self.assertEqual(response_json["SKU"], SalesURLsTests.product.sku)
 
     def test_sales_view_returns_empty_list_for_wrong_group(self):
         """Запрос на /sales с фильтром по группе возвращает пустой лист.
-        
+
         Если мы фильтруем с несуществующей группой мы должны получить
         пустой лист.
         """
         response = self.authorized_client.get(
-            reverse('core:sales',
-            kwargs={'version': 'v1'}) + "?group=kjh445"
+            reverse("core:sales", kwargs={"version": "v1"}) + "?group=kjh445"
         )
         self.assertEqual(json.loads(response.content), [])
 
@@ -127,11 +119,10 @@ class SalesURLsTests(TestCase):
         включая даты начала и окончания."""
         response = self.authorized_client.get(
             (
-                reverse('core:sales',
-                kwargs={'version': 'v1'}) +
-                f"?date_before={datetime.fromisocalendar(2023, 40, 6).date()}" +
-                f"&date_after={datetime.fromisocalendar(2023, 40, 4).date()}"
+                reverse("core:sales", kwargs={"version": "v1"})
+                + f"?date_before={datetime.fromisocalendar(2023, 40, 6).date()}"
+                + f"&date_after={datetime.fromisocalendar(2023, 40, 4).date()}"
             )
         )
         response_json = json.loads(response.content)[0]
-        self.assertEqual(len(response_json['fact']), 2)
+        self.assertEqual(len(response_json["fact"]), 2)
