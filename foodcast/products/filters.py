@@ -16,12 +16,12 @@ class ShopFilter(FilterSet):
     is_active = django_filters.CharFilter(lookup_expr='exact')
 
     def filter_queryset(self, queryset):
-        filtered_quaeryset = super().filter_queryset(queryset)
+        filtered_queryset = super().filter_queryset(queryset)
 
-        if not filtered_quaeryset.exists():
+        if not filtered_queryset.exists():
             raise NotFound('По запросу ничего не найдено')
 
-        return filtered_quaeryset
+        return filtered_queryset
 
     class Meta:
         model = Shops
@@ -45,6 +45,13 @@ class MultipleFilter(django_filters.MultipleChoiceFilter):
 
 
 class SalesFilter(FilterSet):
+    store = MultipleFilter(field_name="store")
+    group = MultipleFilter(field_name="SKU__group")
+    category = MultipleFilter(field_name="SKU__category")
+    subcategory = MultipleFilter(field_name="SKU__subcategory")
+
+
+class ForecastFilter(django_filters.MultipleChoiceFilter):
     store = MultipleFilter(field_name="store")
     group = MultipleFilter(field_name="SKU__group")
     category = MultipleFilter(field_name="SKU__category")
