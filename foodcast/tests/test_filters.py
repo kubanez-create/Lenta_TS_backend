@@ -25,6 +25,13 @@ class SalesURLsTests(TestCase):
             category="1bc0249a6412ef49b07fe6f62e6dc8de",
             subcategory="ca34f669ae367c87f0e75dcae0f61ee5",
         )
+        cls.product2 = Product.objects.create(
+            sku="71c9661741caf40a92a32d1cc8206c04",
+            uom="17",
+            group="c74d97b01eae257e44aa9d5bade97baf",
+            category="c559da2ba967eb820766939a658022c8",
+            subcategory="e06f5ed77191826c212c30722f2cc5a2",
+        )
         cls.shop = Shops.objects.create(
             title="1aa057313c28fa4a40c5bc084b11d276",
             city="1587965fb4d4b5afe8428a4a024feb0d",
@@ -36,6 +43,9 @@ class SalesURLsTests(TestCase):
         )
         cls.sale_obj = Sales.objects.create(
             store=SalesURLsTests.shop, SKU=SalesURLsTests.product
+        )
+        cls.sale_obj2 = Sales.objects.create(
+            store=SalesURLsTests.shop, SKU=SalesURLsTests.product2
         )
         cls.dp1 = DataPoint.objects.create(
             date=datetime.fromisocalendar(2023, 40, 3),
@@ -63,6 +73,24 @@ class SalesURLsTests(TestCase):
             sales_rub=78134,
             sales_rub_promo=0,
             sale=SalesURLsTests.sale_obj,
+        )
+        cls.dp4 = DataPoint.objects.create(
+            date=datetime.fromisocalendar(2023, 40, 4),
+            sales_type=1,
+            sales_units=18,
+            sales_units_promo=18,
+            sales_rub=3760,
+            sales_rub_promo=3760,
+            sale=SalesURLsTests.sale_obj2,
+        )
+        cls.dp5 = DataPoint.objects.create(
+            date=datetime.fromisocalendar(2023, 40, 7),
+            sales_type=2,
+            sales_units=716,
+            sales_units_promo=55,
+            sales_rub=13413,
+            sales_rub_promo=238,
+            sale=SalesURLsTests.sale_obj2,
         )
 
     def setUp(self):
@@ -126,3 +154,16 @@ class SalesURLsTests(TestCase):
         )
         response_json = json.loads(response.content)[0]
         self.assertEqual(len(response_json["fact"]), 2)
+
+    def test_sales_filtered_by_group_return_two_objects(self):
+        """Запрос на /sales с фильтром по группе выдает оба объекта.
+
+        В случае, если у нас два товара в продаже с одинаковой группой
+        мы должны видеть оба в выдаче, при фильтрации по группе.
+        """
+        response = self.authorized_client.get(
+            reverse("core:sales", kwargs={"version": "v1"})
+            + f"?group={SalesURLsTests.product.group}"
+        )
+        response_json = json.loads(response.content)
+        self.assertEqual(len(response_json), 2)
