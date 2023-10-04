@@ -77,6 +77,16 @@ class DataItemSerializer(serializers.Serializer):
             raise serializers.ValidationError('Дата должна быть уникальной')
         return value
 
+    def to_representation(self, obj):
+        return {
+            "store": obj.store_id,
+            "forecast_date": obj.forecast_date,
+            "forecast": {
+                "sku": obj.sku_id,
+                "sales_units": obj.sales_units
+            }
+        }
+
 
 class DataSerializer(serializers.Serializer):
     data = serializers.ListField(child=DataItemSerializer())
