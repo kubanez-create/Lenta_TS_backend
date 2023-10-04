@@ -11,7 +11,9 @@ services:
 
   backend:
     container_name: backend
-    image: kubanez/foodcast_backend:v1.0
+    build:
+      context: ./foodcast
+      dockerfile: Dockerfile
     volumes:
       - ./foodcast:/app
       - static_value:/app/static/
