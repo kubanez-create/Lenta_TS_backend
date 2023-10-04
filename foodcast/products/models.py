@@ -15,7 +15,7 @@ class Product(models.Model):
         max_length=40,
         verbose_name='Группа товаров'
     )
-    category =models.CharField(
+    category = models.CharField(
         max_length=40,
         verbose_name='Категория товаров'
     )
@@ -48,22 +48,29 @@ class Shops(models.Model):
     )
     city = models.CharField(
         max_length=60,
-        verbose_name='Город'
+        verbose_name='Город',
+        default='Город'
     )
     division = models.CharField(
         max_length=60,
-        verbose_name='Дивизион'
+        verbose_name='Дивизион',
+        default='0'
     )
     type_format = models.PositiveIntegerField(
-        verbose_name='Тип Формата'
+        verbose_name='Тип Формата',
+        default='0'
     )
     loc = models.PositiveIntegerField(
-        verbose_name='Локация'
+        verbose_name='Локация',
+        default='0'
     )
     size = models.PositiveIntegerField(
-        verbose_name='Размер'
+        verbose_name='Размер',
+        default='0'
     )
-    is_active = models.BooleanField()
+    is_active = models.BooleanField(
+        default=True
+    )
 
     class Meta:
         verbose_name = 'Магазин ТК'
@@ -115,3 +122,30 @@ class Sales(models.Model):
         related_name="sales",
         on_delete=models.CASCADE
     )
+
+
+class Forecast(models.Model):
+    """Модель Прогнозов продаж"""
+    store = models.ForeignKey(
+        Shops,
+        verbose_name="ТЦ",
+        related_name="forecast",
+        on_delete=models.CASCADE
+    )
+    sku = models.ForeignKey(
+        Product,
+        verbose_name="SKU",
+        related_name="forecast",
+        on_delete=models.CASCADE
+    )
+    forecast_date = models.DateField(
+        verbose_name="Дата прогноза"
+    )
+    sales_units = models.JSONField(
+        verbose_name="Прогнозы продаж"
+    )
+
+    class Meta:
+        verbose_name = 'Прогноз продаж'
+        verbose_name_plural = 'Прогнозы продаж'
+        ordering = ['store']
