@@ -20,13 +20,16 @@ DB_PORT = 5432
 ```
 
 Выполните команду `docker compose up -d --build`
-После запуска контейнера последовательно выполните команды:
+После запуска контейнера последовательно выполните команды (возможно будет
+необходимо прописать sudo перед каждой командой - в WSL2+Windows11 мне пришлось
+прописывать sudo, в VM VirtualBox Manager + Ubuntu server, наоборот, работали
+только команды без sudo).
 
 ```bash
-sudo docker-compose exec web python manage.py migrate
-sudo docker-compose exec web python manage.py createsuperuser
-sudo docker-compose exec web python manage.py collectstatic --no-input
-sudo docker compose exec backend python manage.py loadcsv product /app/data/pr_df.csv
-sudo docker compose exec backend python manage.py loadcsv shop /app/data/st_df.csv
+docker compose exec backend python manage.py migrate
+docker compose exec backend python manage.py createsuperuser
+docker compose exec backend python manage.py collectstatic --no-input
+docker compose exec backend python manage.py loadcsv product /app/data/pr_df.csv
+docker compose exec backend python manage.py loadcsv shop /app/data/st_df.csv
 sudo docker compose exec backend python manage.py loadcsv sales /app/data/sales_df_train_trunkated.csv
 ```
