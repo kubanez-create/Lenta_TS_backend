@@ -1,6 +1,11 @@
 ## Запуск проекта
+Склонируйте себе репозиторий:
+`git clone git@github.com:kubanez-create/Lenta_TS_backend.git`
 
-Для запуска проекта нужен 1 (один) .env файл, лежащий в корне проекта, рядом с
+Перейдите в созданную папку:
+`cd Lenta_TS_backend`
+
+Для запуска проекта требуется создать 1 (один) .env файл, лежащий в корне проекта, рядом с
 .gitignore и README.md.
 Примерное, а может быть и точное содержание файла может быть таким:
 
@@ -12,4 +17,16 @@ POSTGRES_USER = postgres
 POSTGRES_PASSWORD = postgres
 DB_HOST = db
 DB_PORT = 5432
+```
+
+Выполните команду `docker compose up -d --build`
+После запуска контейнера последовательно выполните команды:
+
+```bash
+sudo docker-compose exec web python manage.py migrate
+sudo docker-compose exec web python manage.py createsuperuser
+sudo docker-compose exec web python manage.py collectstatic --no-input
+sudo docker compose exec backend python manage.py loadcsv product /app/data/pr_df.csv
+sudo docker compose exec backend python manage.py loadcsv shop /app/data/st_df.csv
+sudo docker compose exec backend python manage.py loadcsv sales /app/data/sales_df_train_trunkated.csv
 ```
