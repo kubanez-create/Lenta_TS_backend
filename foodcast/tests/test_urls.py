@@ -9,6 +9,8 @@ User = get_user_model()
 
 class URLsTests(TestCase):
     """Class for testing application urls."""
+    url_without_version = "/api/sales/"
+    url_with_wrong_version = "/api/v4/sales"
 
     @classmethod
     def setUpClass(cls):
@@ -38,7 +40,6 @@ class URLsTests(TestCase):
         for name, url in URLsTests.urls.items():
             with self.subTest(url_name=name):
                 response = self.authorized_client.get(url)
-                print(response.request)
                 self.assertEqual(response.status_code, HTTPStatus.OK.value)
 
     def test_unauthorized_user_cannot_reach_urls(self):
@@ -47,3 +48,11 @@ class URLsTests(TestCase):
                 response = self.guest_client.get(url)
                 self.assertEqual(
                     response.status_code, HTTPStatus.UNAUTHORIZED.value)
+
+    def test_version_outside_1_or_2_not_found(self):
+        response = self.authorized_client.get(self.url_with_wrong_version)
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_url_without_version_is_not_found(self):
+        response = self.authorized_client.get(self.url_without_version)
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
