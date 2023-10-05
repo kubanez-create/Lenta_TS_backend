@@ -1,4 +1,4 @@
-from django.urls import include, re_path, path
+from django.urls import include, re_path
 from rest_framework.routers import DefaultRouter
 
 from .views import ForecastViewSet, ProductViewSet, ShopsViewSet
@@ -16,6 +16,7 @@ urlpatterns = [
         include(router.urls)
     ),
 ]
+print(urlpatterns)
 """    re_path(
         r'^(?P<version>(v1|v2))/',
         ForecastViewSet.as_view({'get': 'excel_forecast_download'}),
