@@ -16,7 +16,6 @@ urlpatterns = [
         include(router.urls)
     ),
 ]
-print(urlpatterns)
 """    re_path(
         r'^(?P<version>(v1|v2))/',
         ForecastViewSet.as_view({'get': 'excel_forecast_download'}),
