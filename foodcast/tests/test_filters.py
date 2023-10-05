@@ -124,8 +124,11 @@ class SalesURLsTests(TestCase):
             reverse("core:sales", kwargs={"version": "v1"})
             + f"?group={SalesURLsTests.product.group}"
         )
-        response_json = json.loads(response.content)[0]
-        self.assertEqual(response_json["SKU"], SalesURLsTests.product.sku)
+        response_json = json.loads(response.content)
+        product = [
+            a for a in response_json if a.get("SKU")==SalesURLsTests.product.sku
+        ]
+        self.assertEqual(product.pop().get("SKU"), SalesURLsTests.product.sku)
 
     def test_sales_view_returns_empty_list_for_wrong_group(self):
         """Запрос на /sales с фильтром по группе возвращает пустой лист.
