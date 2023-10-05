@@ -1,7 +1,9 @@
+import json
 from datetime import date
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from products.models import DataPoint, Product, Sales, Shops
+from products.models import DataPoint, Forecast, Product, Sales, Shops
 
 User = get_user_model()
 
@@ -179,4 +181,56 @@ class SalesModelTest(TestCase):
             with self.subTest(field=field):
                 self.assertEqual(
                     deal._meta.get_field(field).verbose_name, expected_value
+                )
+
+
+class ForecastModelTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.product = Product.objects.create(
+            sku="fd064933250b0bfe4f926b867b0a5ec8",
+            uom="17",
+            group="c74d97b01eae257e44aa9d5bade97baf",
+            category="1bc0249a6412ef49b07fe6f62e6dc8de",
+            subcategory="ca34f669ae367c87f0e75dcae0f61ee5",
+        )
+        cls.shop = Shops.objects.create(
+            title="1aa057313c28fa4a40c5bc084b11d276",
+            city="1587965fb4d4b5afe8428a4a024feb0d",
+            division="81b4dd343f5880df806d4c5d4a846c64",
+            type_format=1,
+            loc=1,
+            size=19,
+            is_active=True,
+        )
+        cls.forecast = Forecast.objects.create(
+            store=ForecastModelTest.shop,
+            sku=ForecastModelTest.product,
+            forecast_date=date.today(),
+            sales_units=json.dumps(
+                {
+                    "2023-09-01": 1,
+                    "2023-09-02": 3,
+                    "2023-09-03": 7,
+                    "2023-09-04": 9,
+                    "2023-09-05": 0
+                }
+            )
+        )
+
+    def test_verbose_name(self):
+        """verbose_name в полях совпадает с ожидаемым."""
+        fc = ForecastModelTest.forecast
+        field_verboses = {
+            "store": "ТЦ",
+            "sku": "SKU",
+            "forecast_date": "Дата прогноза",
+            "sales_units": "Прогнозы продаж"
+        }
+
+        for field, expected_value in field_verboses.items():
+            with self.subTest(field=field):
+                self.assertEqual(
+                    fc._meta.get_field(field).verbose_name, expected_value
                 )
