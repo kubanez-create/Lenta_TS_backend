@@ -44,5 +44,5 @@ sudo docker compose exec backend python manage.py loadcsv sales /app/data/sales_
   "2023-09-04": 9,
   "2023-09-05": 0
   }
-```
-Получить токен можно как в swagger через обращение к /api/v1/auth/token/login, так и в админке в разделе Токенs.
+```Получить токен можно как в swagger через обращение к /api/v1/auth/token/login, так и в админке в разделе Токенs.
+Чтобы авторизоваться в swagger вставьте в поле Authorize **token some_numbers_and_letters_your_token_consists_of** (Слово "token", затем пробел и значение токена).
