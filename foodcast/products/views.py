@@ -77,7 +77,12 @@ class ForecastViewSet(viewsets.ModelViewSet):
             'sku__sku': 'SKU',
             'forecast_date': 'Дата Прогноза'})
         excel_file = io.BytesIO()
-        df.to_excel(excel_file, index=False, sheet_name=f'forecast_export', startrow=2)
+        df.to_excel(
+            excel_file,
+            index=False,
+            sheet_name=f'forecast_export',
+            startrow=2
+        )
         response = HttpResponse(content_type='application/ms-excel')
         response['Content-Disposition'] = 'attachment; filename="forecast_data.xlsx"'
         excel_file.seek(0)
