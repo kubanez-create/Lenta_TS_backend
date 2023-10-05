@@ -59,7 +59,11 @@ class ForecastViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def excel_forecast_download(self, request):
         quseryset = self.get_queryset()
-        data = quseryset.values('store__title', 'sku__sku', 'forecast_date', 'sales_units')
+        data = quseryset.values(
+            'store__title',
+            'sku__sku',
+            'forecast_date',
+            'sales_units')
         initial_data = list(data)
 
         for data in initial_data:
@@ -68,13 +72,12 @@ class ForecastViewSet(viewsets.ModelViewSet):
             data.update(sales_units_dict)
 
         df = pd.DataFrame(initial_data)
-        df = df.rename(columns={'store__title': 'Магазин', 'sku__sku': 'SKU', 'forecast_date': 'Дата Прогноза'})
-
+        df = df.rename(columns={
+            'store__title': 'Магазин',
+            'sku__sku': 'SKU',
+            'forecast_date': 'Дата Прогноза'})
         excel_file = io.BytesIO()
-
         df.to_excel(excel_file, index=False, sheet_name=f'forecast_export', startrow=2)
-
-
         response = HttpResponse(content_type='application/ms-excel')
         response['Content-Disposition'] = 'attachment; filename="forecast_data.xlsx"'
         excel_file.seek(0)
