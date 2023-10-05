@@ -83,6 +83,7 @@ class ForecastViewSet(viewsets.ModelViewSet):
             sheet_name=f'forecast_export',
             startrow=2
         )
+
         response = HttpResponse(content_type='application/ms-excel')
         response['Content-Disposition'] = 'attachment; filename="forecast_data.xlsx"'
         excel_file.seek(0)
