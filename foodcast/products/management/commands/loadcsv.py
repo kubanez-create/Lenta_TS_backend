@@ -6,11 +6,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from products.models import DataPoint, Product, Shops, Sales
 
-COMMANDS = {
-    "product": Product,
-    "shop": Shops,
-    "sales": None
-}
+COMMANDS = {"product": Product, "shop": Shops, "sales": None}
 
 
 class Command(BaseCommand):
@@ -60,26 +56,23 @@ class Command(BaseCommand):
                         )
                     elif command == "sales":
                         sales_obj, _ = Sales.objects.get_or_create(
-                            store=Shops.objects.get(
-                                title=data_to_insert.get("st_id")),
+                            store=Shops.objects.get(title=data_to_insert.get("st_id")),
                             SKU=Product.objects.get(
-                                sku=data_to_insert.get("pr_sku_id"))
+                                sku=data_to_insert.get("pr_sku_id")
+                            ),
                         )
                         DataPoint.objects.create(
                             date=datetime.strptime(
-                                data_to_insert.get("date"),
-                                "%m/%d/%Y"),
-                            sales_type=data_to_insert.get(
-                                "pr_sales_type_id"),
-                            sales_units=data_to_insert.get(
-                                "pr_sales_in_units"),
+                                data_to_insert.get("date"), "%m/%d/%Y"
+                            ),
+                            sales_type=data_to_insert.get("pr_sales_type_id"),
+                            sales_units=data_to_insert.get("pr_sales_in_units"),
                             sales_units_promo=data_to_insert.get(
-                                "pr_promo_sales_in_units"),
-                            sales_rub=data_to_insert.get(
-                                "pr_sales_in_rub"),
-                            sales_rub_promo=data_to_insert.get(
-                                "pr_promo_sales_in_rub"),
-                            sale=sales_obj
+                                "pr_promo_sales_in_units"
+                            ),
+                            sales_rub=data_to_insert.get("pr_sales_in_rub"),
+                            sales_rub_promo=data_to_insert.get("pr_promo_sales_in_rub"),
+                            sale=sales_obj,
                         )
 
             self.stdout.write(

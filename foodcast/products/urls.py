@@ -1,7 +1,7 @@
-from django.urls import include, re_path, path
+from django.urls import include, re_path
 from rest_framework.routers import DefaultRouter
 
-from .views import ShopsViewSet, ProductViewSet, ForecastViewSet
+from .views import ForecastViewSet, ProductViewSet, ShopsViewSet
 
 app_name = 'products'
 

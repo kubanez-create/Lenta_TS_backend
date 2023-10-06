@@ -4,14 +4,13 @@ from products.models import Sales, DataPoint
 
 
 class FilteredListSerializer(serializers.ListSerializer):
-
     def to_representation(self, data):
-        if (self.context['request'].query_params.get("date_before") and
-        self.context['request'].query_params.get("date_after")
-        ):
+        if self.context["request"].query_params.get("date_before") and self.context[
+            "request"
+        ].query_params.get("date_after"):
             data = data.filter(
-                date__lte=self.context['request'].query_params.get("date_before"),
-                date__gte=self.context['request'].query_params.get("date_after")
+                date__lte=self.context["request"].query_params.get("date_before"),
+                date__gte=self.context["request"].query_params.get("date_after"),
             )
         return super(FilteredListSerializer, self).to_representation(data)
 
