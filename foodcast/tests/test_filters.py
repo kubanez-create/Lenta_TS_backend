@@ -171,6 +171,20 @@ class SalesURLsTests(TestCase):
         response_json = json.loads(response.content)
         self.assertEqual(len(response_json), 2)
 
+    def test_sales_handle_multiple_filter(self):
+        """Запрос на /sales с множественным фильтром возвращает 2 объекта.
+
+        Проверяем, что мы можем фильтровать по "категория" ИЛИ
+        "категория" фильтру.
+        """
+        response = self.authorized_client.get(
+            reverse("core:sales", kwargs={"version": "v1"})
+            + f"?category={SalesURLsTests.product.category}"
+            + f"&category={SalesURLsTests.product2.category}"
+        )
+        response_json = json.loads(response.content)
+        self.assertEqual(len(response_json), 2)
+
 
 class ForecastFilterTests(TestCase):
     """Class for testing /forecast filters."""
@@ -222,7 +236,21 @@ class ForecastFilterTests(TestCase):
             reverse("products:forecast-list", kwargs={"version": "v1"})
             + f"?store={ForecastFilterTests.shop.title}"
         )
-        response_json = json.loads(response.content)[0]
+        response_json = json.loads(response.content).get("data")[0]
         self.assertEqual(
             response_json["store"], ForecastFilterTests.shop.title)
-        self.assertEqual(response_json["SKU"], ForecastFilterTests.product.sku)
+        self.assertEqual(response_json["sku"], ForecastFilterTests.product.sku)
+
+    def test_forecast_filter_by_shop_and_group(self):
+        """Запрос на /forecast с фильтрами выдает корректный объект.
+
+        Проверяем, что мы можем фильтровать по двум атрибутам
+        одновременно.
+        """
+        response = self.authorized_client.get(
+            reverse("products:forecast-list", kwargs={"version": "v1"})
+            + f"?store={ForecastFilterTests.shop.title}"
+            + f"&group={ForecastFilterTests.product.group}"
+        )
+        response_json = json.loads(response.content).get("data")[0]
+        self.assertEqual(response_json["sku"], ForecastFilterTests.product.sku)
