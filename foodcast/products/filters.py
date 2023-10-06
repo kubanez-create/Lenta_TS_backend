@@ -3,7 +3,7 @@ from django.forms.fields import MultipleChoiceField
 from django_filters import FilterSet
 from rest_framework.exceptions import NotFound
 
-from .models import Shops
+from .models import Forecast, Shops
 
 
 class ShopFilter(FilterSet):
@@ -51,8 +51,8 @@ class SalesFilter(FilterSet):
     subcategory = MultipleFilter(field_name="SKU__subcategory")
 
 
-class ForecastFilter(django_filters.MultipleChoiceFilter):
+class ForecastFilter(FilterSet):
     store = MultipleFilter(field_name="store")
-    group = MultipleFilter(field_name="SKU__group")
-    category = MultipleFilter(field_name="SKU__category")
-    subcategory = MultipleFilter(field_name="SKU__subcategory")
+    group = MultipleFilter(field_name="sku__group")
+    category = MultipleFilter(field_name="sku__category")
+    subcategory = MultipleFilter(field_name="sku__subcategory")

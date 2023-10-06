@@ -9,7 +9,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .filters import ShopFilter
+from .filters import ForecastFilter, ShopFilter
 from .models import Forecast, Product, Shops
 from .serializers import (
     DataSerializer, ProductSerializer, ReadForecastSerializer, ShopsSerializer
@@ -46,6 +46,8 @@ class ProductViewSet(viewsets.ModelViewSet):
 class ForecastViewSet(viewsets.ModelViewSet):
     queryset = Forecast.objects.all()
     permission_classes = (IsAuthenticated,)
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ForecastFilter
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
