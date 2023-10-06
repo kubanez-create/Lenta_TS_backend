@@ -24,18 +24,6 @@ services:
     ports:
       - "8000:8000"
 
-  redis:
-    image: redis
-    restart: always
-
-  worker:
-    restart: always
-    build:
-      context: ./foodcast
-    volumes:
-      - ./foodcast:/app
-    command: celery -A foodcast worker -l INFO
-
 volumes:
   postgres_data:
   static_value:
