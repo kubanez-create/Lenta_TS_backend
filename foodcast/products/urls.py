@@ -12,7 +12,7 @@ router.register(r'forecast', ForecastViewSet, basename='forecast')
 
 urlpatterns = [
     re_path(
-        '',
+        ''^(?P<version>(v1|v2))/',
         include(router.urls)
     ),
 ]
