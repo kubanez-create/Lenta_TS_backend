@@ -124,6 +124,17 @@ class Sales(models.Model):
     )
 
 
+class ForecastPoint(models.Model):
+    date = models.DateField(verbose_name="Дата")
+    value = models.PositiveIntegerField(verbose_name="Значение")
+    forecast = models.ForeignKey(
+        "Forecast",
+        verbose_name="",
+        related_name="forecast_point",
+        on_delete=models.CASCADE
+    )
+
+
 class Forecast(models.Model):
     """Модель Прогнозов продаж"""
     store = models.ForeignKey(
@@ -141,9 +152,9 @@ class Forecast(models.Model):
     forecast_date = models.DateField(
         verbose_name="Дата прогноза"
     )
-    sales_units = models.JSONField(
-        verbose_name="Прогнозы продаж"
-    )
+    # sales_units = models.JSONField(
+    #     verbose_name="Прогнозы продаж"
+    # )
 
     class Meta:
         verbose_name = 'Прогноз продаж'

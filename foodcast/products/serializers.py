@@ -1,8 +1,7 @@
-from django.db import transaction
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
 
-from .models import Product, Shops, Forecast
+from .models import Forecast, ForecastPoint, Product, Shops
 
 
 BATCH_FORECAST_TO_CREATE = 200
@@ -38,6 +37,30 @@ class ProductSerializer(serializers.ModelSerializer):
         )
 
 
+class FilteredListSerializer(serializers.ListSerializer):
+    def to_representation(self, data):
+        if self.context["request"].query_params.get("date_before") and self.context[
+            "request"
+        ].query_params.get("date_after"):
+            data = data.filter(
+                date__lte=self.context["request"].query_params.get("date_before"),
+                date__gte=self.context["request"].query_params.get("date_after"),
+            )
+        # return super(FilteredListSerializer, self).to_representation(data)
+        return {
+            d.date.isoformat(): d.value for d in data.all()
+        }
+
+class ForecastPointSerializer(serializers.ModelSerializer):
+    class Meta:
+        list_serializer_class = FilteredListSerializer
+        model = ForecastPoint
+        exclude = ["id", "forecast"]
+
+    def to_representation(self, data):
+        return f"{data.date.isoformat()}", data.value
+
+
 class ReadForecastSerializer(serializers.ModelSerializer):
     """Сериализатор обработки прогнозов"""
     store = serializers.PrimaryKeyRelatedField(
@@ -49,7 +72,7 @@ class ReadForecastSerializer(serializers.ModelSerializer):
         source='sku.sku'
     )
     forecast_date = serializers.DateField()
-    sales_units = serializers.JSONField()
+    sales_units = ForecastPointSerializer(many=True, source="forecast_point")
 
     class Meta:
         model = Forecast
