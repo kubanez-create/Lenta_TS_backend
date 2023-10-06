@@ -1,3 +1,5 @@
+import ast
+
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 import pandas as pd
@@ -59,11 +61,30 @@ class ForecastViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def excel_forecast_download(self, request):
         quseryset = self.get_queryset()
-        data = quseryset.values('store__title', 'sku__sku', 'forecast_date', 'sales_units')
+        data = quseryset.values(
+            'store__title',
+            'sku__sku',
+            'forecast_date',
+            'sales_units')
+        initial_data = list(data)
 
-        df = pd.DataFrame(data)
+        for data in initial_data:
+            sales_units_str = data.pop('sales_units')
+            sales_units_dict = ast.literal_eval(sales_units_str)
+            data.update(sales_units_dict)
+
+        df = pd.DataFrame(initial_data)
+        df = df.rename(columns={
+            'store__title': 'Магазин',
+            'sku__sku': 'SKU',
+            'forecast_date': 'Дата Прогноза'})
         excel_file = io.BytesIO()
-        df.to_excel(excel_file, index=False, sheet_name=f'forecast_export')
+        df.to_excel(
+            excel_file,
+            index=False,
+            sheet_name=f'forecast_export',
+            startrow=2
+        )
 
         response = HttpResponse(content_type='application/ms-excel')
         response['Content-Disposition'] = 'attachment; filename="forecast_data.xlsx"'
@@ -71,12 +92,3 @@ class ForecastViewSet(viewsets.ModelViewSet):
         response.write(excel_file.read())
 
         return response
-
-
-"""    def create(self, request, *args, **kwargs):
-        serializer = DataSerializer(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)"""
