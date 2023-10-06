@@ -1,12 +1,12 @@
 import json
-from datetime import datetime
+from datetime import datetime, date
 
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.core.cache import cache
 from django.urls import reverse
 
-from products.models import Product, Sales, Shops, DataPoint
+from products.models import DataPoint, Forecast, Product, Sales, Shops
 
 User = get_user_model()
 
@@ -17,7 +17,7 @@ class SalesURLsTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = User.objects.create(email="a@b.com", password="j7F@")
+        cls.user = User.objects.create_user(email="a@b.com")
         cls.product = Product.objects.create(
             sku="fd064933250b0bfe4f926b867b0a5ec8",
             uom="17",
@@ -112,7 +112,7 @@ class SalesURLsTests(TestCase):
         """Запрос на /sales с фильтром на ТЦ возвращает корректный объект."""
         response = self.authorized_client.get(
             reverse("core:sales", kwargs={"version": "v1"})
-            + f"store={SalesURLsTests.shop.title}"
+            + f"?store={SalesURLsTests.shop.title}"
         )
         response_json = json.loads(response.content)[0]
         self.assertEqual(response_json["store"], SalesURLsTests.shop.title)
@@ -170,3 +170,59 @@ class SalesURLsTests(TestCase):
         )
         response_json = json.loads(response.content)
         self.assertEqual(len(response_json), 2)
+
+
+class ForecastFilterTests(TestCase):
+    """Class for testing /forecast filters."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = User.objects.create_user(email="a@b.com")
+        cls.product = Product.objects.create(
+            sku="fd064933250b0bfe4f926b867b0a5ec8",
+            uom="17",
+            group="c74d97b01eae257e44aa9d5bade97baf",
+            category="1bc0249a6412ef49b07fe6f62e6dc8de",
+            subcategory="ca34f669ae367c87f0e75dcae0f61ee5",
+        )
+        cls.shop = Shops.objects.create(
+            title="1aa057313c28fa4a40c5bc084b11d276",
+            city="1587965fb4d4b5afe8428a4a024feb0d",
+            division="81b4dd343f5880df806d4c5d4a846c64",
+            type_format=1,
+            loc=1,
+            size=19,
+            is_active=True,
+        )
+        cls.forecast = Forecast.objects.create(
+            store=ForecastFilterTests.shop,
+            sku=ForecastFilterTests.product,
+            forecast_date=date.today(),
+            sales_units=json.dumps(
+                {
+                    "2023-09-01": 1,
+                    "2023-09-02": 3,
+                    "2023-09-03": 7,
+                    "2023-09-04": 9,
+                    "2023-09-05": 0
+                }
+            )
+        )
+
+    def setUp(self):
+        self.guest_client = Client()
+        self.authorized_client = Client()
+        self.authorized_client.force_login(ForecastFilterTests.user)
+        cache.clear()
+
+    def test_forecast_filter_by_shop(self):
+        """Запрос на /forecast с фильтром по ТЦ выдает корректный объект."""
+        response = self.authorized_client.get(
+            reverse("products:forecast-list", kwargs={"version": "v1"})
+            + f"?store={ForecastFilterTests.shop.title}"
+        )
+        response_json = json.loads(response.content)[0]
+        self.assertEqual(
+            response_json["store"], ForecastFilterTests.shop.title)
+        self.assertEqual(response_json["SKU"], ForecastFilterTests.product.sku)
