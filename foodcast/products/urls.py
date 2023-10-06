@@ -11,7 +11,7 @@ router.register(r'product', ProductViewSet, basename='product')
 router.register(r'forecast', ForecastViewSet, basename='forecast')
 
 urlpatterns = [
-    path(
+    re_path(
         '',
         include(router.urls)
     ),
