@@ -9,13 +9,13 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .filters import ForecastFilter, ShopFilter, StatisticFilter
+from .filters import ForecastFilter, ShopFilter
 from .models import Forecast, Product, Shops
 from .serializers import (
     DataSerializer,
     ProductSerializer,
     ReadForecastSerializer,
-    ShopsSerializer, StatisticsSerializer,
+    ShopsSerializer,
 )
 
 
@@ -97,10 +97,3 @@ class ForecastViewSet(viewsets.ModelViewSet):
         response.write(excel_file.read())
 
         return response
-
-
-class StatisticViewSet(viewsets.ViewSet):
-    serializer_class = StatisticsSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = StatisticFilter
-    permission_classes = (IsAuthenticated,)
