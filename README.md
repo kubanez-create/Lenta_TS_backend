@@ -1,4 +1,4 @@
-## Запуск проекта
+# Запуск проекта
 
 Склонируйте себе репозиторий:
 `git clone git@github.com:kubanez-create/Lenta_TS_backend.git`
@@ -10,7 +10,7 @@
 .gitignore и README.md.
 Примерное, а может быть и точное содержание файла может быть таким:
 
-```
+```python
 SECRET_KEY = 'django-insecure-i4(m5feku5be-yn%r9h$r+bdnl6v4n@b+cy9myqs1iqn#p$6mn'
 DB_ENGINE = django.db.backends.postgresql
 DB_NAME = postgres
@@ -33,23 +33,12 @@ docker compose exec backend python manage.py createsuperuser
 docker compose exec backend python manage.py collectstatic --no-input
 docker compose exec backend python manage.py loadcsv product /app/data/pr_df.csv
 docker compose exec backend python manage.py loadcsv shop /app/data/st_df.csv
-sudo docker compose exec backend python manage.py loadcsv sales /app/data/sales_df_train_truncated.csv
-sudo docker compose exec backend python manage.py loadcsv forecasts /app/data//sales_submission_trancated.csv
+docker compose exec backend python manage.py loadcsv sales /app/data/sales_df_train_truncated.csv
+docker compose exec backend python manage.py loadcsv forecasts /app/data/sales_submission_trancated.csv
 ```
 
 После этого Вам должны быть доступны страницы с документацией http://localhost:8000/swagger/ и
-админка http://localhost:8000/admin/. Добавлять тестовые предсказания придется сегодня/завтра вручную в админке в разделе Прогнозы
-продаж. В поле Прогнозы продаж, при добавлении нового прогноза нужно вставить следующую структуру данных:
-
-```json
-{
-  "2023-09-01": 1,
-  "2023-09-02": 3,
-  "2023-09-03": 7,
-  "2023-09-04": 9,
-  "2023-09-05": 0
-}
-```
+админка http://localhost:8000/admin/.
 
 Получить токен можно как в swagger через обращение к /api/v1/auth/token/login, так и в админке в разделе Токенs.
 Чтобы авторизоваться в swagger вставьте в поле Authorize
