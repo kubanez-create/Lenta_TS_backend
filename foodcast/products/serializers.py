@@ -1,9 +1,10 @@
 from datetime import date
 
 from django.shortcuts import get_object_or_404
+import numpy as np
 from rest_framework import serializers
 
-from .models import Forecast, ForecastPoint, Product, Shops
+from .models import Forecast, ForecastPoint, Product, Shops, DataPoint
 
 BATCH_FORECAST_TO_CREATE = 200
 
@@ -153,3 +154,70 @@ class DataSerializer(serializers.Serializer):
 
         return {'data': forecast_to_create}
 
+
+class StatisticsSerializer(serializers.ModelSerializer):
+    store = serializers.PrimaryKeyRelatedField(
+        queryset=Forecast.objects.all(),
+        source='store.title'
+    )
+    sku = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all(),
+        source='sku.sku'
+    )
+    forecast_value = serializers.SerializerMethodField()
+    fact_sales = serializers.SerializerMethodField(read_only=True)
+    difference_value = serializers.SerializerMethodField(read_only=True)
+    wape_value = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        list_serializer_class = FilteredListSerializer
+        model = DataPoint
+        exclude = [
+            "id",
+            "sales_type",
+            "sales_units",
+            "sales_units_promo",
+            "sales_rub",
+            "sales_rub_promo",
+        ]
+
+    def get_fact_sales(self, obj):
+        sku = obj.sku
+        fact_sales_count = DataPoint.objects.filter(sku=sku).count()
+        return fact_sales_count
+
+    def get_forecast_value(self, obj):
+        forecast = obj.forecast
+        date_before = self.context["request"].query_params.get("date_before")
+        date_after = self.context["request"].query_params.get("date_after")
+
+        queryset = ForecastPoint.objects.filter(forecast=forecast)
+
+        if date_before:
+            queryset = queryset.filter(date__lte=date_before)
+
+        if date_after:
+            queryset = queryset.filter(date__gte=date_after)
+
+        forecast_value_sum = queryset.aggregate(Sum("value"))
+
+        return forecast_value_sum
+
+    def get_difference_value(self, obj):
+        fact = self.get_fact_sales(obj)
+        forecast = self.get_forecast_value(obj)
+        return fact - forecast
+
+    def get_wape_value(self, obj):
+        fact = self.get_fact_sales(obj)
+        forecast = self.get_forecast_value(obj)
+
+        if fact == 0:
+            return 0.0
+
+        fact_sales = np.array(fact)
+        forecast_value = np.array(forecast)
+        absolute_percentage_error = np.abs(fact_sales - forecast_value) / fact_sales
+        wape = np.mean(absolute_percentage_error) * 100.0
+
+        return wape
