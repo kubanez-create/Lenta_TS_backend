@@ -1,13 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-
-
-from .models import Product, Shops, Sales, DataPoint, Forecast
-from users.models import CustomUser
 from users.admin_forms import UserChangeForm, UserCreationForm
 from users.models import CustomUser
 
-from .models import DataPoint, Product, Sales, Shops
+from .models import DataPoint, Forecast, ForecastPoint, Product, Sales, Shops
 
 
 class ProductAdmin(admin.ModelAdmin):
@@ -37,7 +33,7 @@ class SalesAdmin(admin.ModelAdmin):
 
 
 class ForecastAdmin(admin.ModelAdmin):
-    list_display = ("forecast_date", "store", "sku", "sales_units")
+    list_display = ("forecast_date", "store", "sku")
     list_filter = ("forecast_date", "store")
 
 
@@ -67,4 +63,5 @@ admin.site.register(Shops, ShopsAdmin)
 admin.site.register(Sales, SalesAdmin)
 admin.site.register(CustomUser, UsersAdmin)
 admin.site.register(DataPoint)
+admin.site.register(ForecastPoint)
 admin.site.register(Forecast, ForecastAdmin)

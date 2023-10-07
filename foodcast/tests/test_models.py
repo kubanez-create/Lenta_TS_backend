@@ -1,4 +1,3 @@
-import json
 from datetime import date
 
 from django.contrib.auth import get_user_model
@@ -116,13 +115,13 @@ class DataPointModelTest(TestCase):
             store=DataPointModelTest.shop, SKU=DataPointModelTest.product
         )
         cls.point = DataPoint.objects.create(
-            date = date.today(),
-            sales_type = 1,
-            sales_units = 4,
-            sales_units_promo = 1,
-            sales_rub = 1433,
-            sales_rub_promo = 98,
-            sale = DataPointModelTest.sale_obj
+            date=date.today(),
+            sales_type=1,
+            sales_units=4,
+            sales_units_promo=1,
+            sales_rub=1433,
+            sales_rub_promo=98,
+            sale=DataPointModelTest.sale_obj,
         )
 
     def test_verbose_name(self):
@@ -135,7 +134,7 @@ class DataPointModelTest(TestCase):
             "sales_units_promo": "Продажи в акцию, ед.изм",
             "sales_rub": "Продажи, руб.",
             "sales_rub_promo": "Продажи в акцию, руб.",
-            "sale": "Реализация"
+            "sale": "Реализация",
         }
 
         for field, expected_value in field_verboses.items():
@@ -172,10 +171,7 @@ class SalesModelTest(TestCase):
     def test_verbose_name(self):
         """verbose_name в полях совпадает с ожидаемым."""
         deal = SalesModelTest.sale_obj
-        field_verboses = {
-            "store": "ТЦ",
-            "SKU": "SKU"
-        }
+        field_verboses = {"store": "ТЦ", "SKU": "SKU"}
 
         for field, expected_value in field_verboses.items():
             with self.subTest(field=field):
@@ -208,15 +204,6 @@ class ForecastModelTest(TestCase):
             store=ForecastModelTest.shop,
             sku=ForecastModelTest.product,
             forecast_date=date.today(),
-            sales_units=json.dumps(
-                {
-                    "2023-09-01": 1,
-                    "2023-09-02": 3,
-                    "2023-09-03": 7,
-                    "2023-09-04": 9,
-                    "2023-09-05": 0
-                }
-            )
         )
 
     def test_verbose_name(self):
@@ -226,11 +213,8 @@ class ForecastModelTest(TestCase):
             "store": "ТЦ",
             "sku": "SKU",
             "forecast_date": "Дата прогноза",
-            "sales_units": "Прогнозы продаж"
         }
 
         for field, expected_value in field_verboses.items():
             with self.subTest(field=field):
-                self.assertEqual(
-                    fc._meta.get_field(field).verbose_name, expected_value
-                )
+                self.assertEqual(fc._meta.get_field(field).verbose_name, expected_value)

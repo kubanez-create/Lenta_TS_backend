@@ -1,12 +1,11 @@
 import json
-from datetime import datetime, date
+from datetime import date, datetime
 
 from django.contrib.auth import get_user_model
-from django.test import Client, TestCase
 from django.core.cache import cache
+from django.test import Client, TestCase
 from django.urls import reverse
-
-from products.models import DataPoint, Forecast, Product, Sales, Shops
+from products.models import DataPoint, Forecast, ForecastPoint, Product, Sales, Shops
 
 User = get_user_model()
 
@@ -212,16 +211,27 @@ class ForecastFilterTests(TestCase):
         cls.forecast = Forecast.objects.create(
             store=ForecastFilterTests.shop,
             sku=ForecastFilterTests.product,
-            forecast_date=date.today(),
-            sales_units=json.dumps(
-                {
-                    "2023-09-01": 1,
-                    "2023-09-02": 3,
-                    "2023-09-03": 7,
-                    "2023-09-04": 9,
-                    "2023-09-05": 0
-                }
-            )
+            forecast_date=date.today()
+        )
+        cls.p1 = ForecastPoint.objects.create(
+            date=date(2023, 9, 3),
+            value=3,
+            forecast=ForecastFilterTests.forecast,
+        )
+        cls.p2 = ForecastPoint.objects.create(
+            date=date(2023, 9, 4),
+            value=2,
+            forecast=ForecastFilterTests.forecast,
+        )
+        cls.p3 = ForecastPoint.objects.create(
+            date=date(2023, 9, 5),
+            value=1,
+            forecast=ForecastFilterTests.forecast,
+        )
+        cls.p4 = ForecastPoint.objects.create(
+            date=date(2023, 9, 6),
+            value=12,
+            forecast=ForecastFilterTests.forecast,
         )
 
     def setUp(self):
@@ -265,11 +275,9 @@ class ForecastFilterTests(TestCase):
         response = self.authorized_client.get(
             (
                 reverse("products:forecast-list", kwargs={"version": "v1"})
-                + f"?date_before={date(2023, 9, 1)}"
+                + f"?date_before={date(2023, 9, 5)}"
                 + f"&date_after={date(2023, 9, 3)}"
             )
         )
         response_json = json.loads(response.content).get("data")[0]
-        print(response_json)
-        print(type(json.loads(response_json["sales_units"])))
         self.assertEqual(len(response_json["sales_units"]), 3)

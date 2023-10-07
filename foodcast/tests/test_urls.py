@@ -9,6 +9,7 @@ User = get_user_model()
 
 class URLsTests(TestCase):
     """Class for testing application urls."""
+
     url_without_version = "/api/sales/"
     url_with_wrong_version = "/api/v4/sales"
 
@@ -34,7 +35,7 @@ class URLsTests(TestCase):
     # ----------------------------------------------------------------------
     # Traceback (most recent call last):
     # File "/home/kubanez/Dev/Lenta_TS_backend/foodcast/tests/test_urls.py", line 35, in test_authorized_user_can_reach_urls
-     #   self.assertEqual(response.status_code, HTTPStatus.OK.value)
+    #   self.assertEqual(response.status_code, HTTPStatus.OK.value)
     # AssertionError: 404 != 200
     def test_authorized_user_can_reach_urls(self):
         for name, url in URLsTests.urls.items():
@@ -46,8 +47,7 @@ class URLsTests(TestCase):
         for name, url in URLsTests.urls.items():
             with self.subTest(url_name=name):
                 response = self.guest_client.get(url)
-                self.assertEqual(
-                    response.status_code, HTTPStatus.UNAUTHORIZED.value)
+                self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED.value)
 
     def test_version_outside_1_or_2_not_found(self):
         response = self.authorized_client.get(self.url_with_wrong_version)

@@ -3,10 +3,21 @@ import csv
 from datetime import datetime
 
 from django.core.management.base import BaseCommand, CommandError
+from products.models import (
+    DataPoint,
+    Forecast,
+    ForecastPoint,
+    Product,
+    Sales,
+    Shops
+)
 
-from products.models import DataPoint, Product, Shops, Sales
-
-COMMANDS = {"product": Product, "shop": Shops, "sales": None}
+COMMANDS = {
+    "product": Product,
+    "shop": Shops,
+    "sales": None,
+    "forecasts": None,
+}
 
 
 class Command(BaseCommand):
@@ -73,6 +84,21 @@ class Command(BaseCommand):
                             sales_rub=data_to_insert.get("pr_sales_in_rub"),
                             sales_rub_promo=data_to_insert.get("pr_promo_sales_in_rub"),
                             sale=sales_obj,
+                        )
+                    elif command == "forecasts":
+                        forecast_obj, _ = Forecast.objects.get_or_create(
+                            store=Shops.objects.get(title=data_to_insert.get("st_id")),
+                            sku=Product.objects.get(
+                                sku=data_to_insert.get("pr_sku_id")
+                            ),
+                            forecast_date = datetime.now().date()
+                        )
+                        ForecastPoint.objects.create(
+                            date=datetime.strptime(
+                                data_to_insert.get("date"), "%m/%d/%Y"
+                            ).date().isoformat(),
+                            value=data_to_insert.get("target"),
+                            forecast=forecast_obj,
                         )
 
             self.stdout.write(

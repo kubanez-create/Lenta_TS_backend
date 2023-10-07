@@ -3,7 +3,7 @@ from django.forms.fields import MultipleChoiceField
 from django_filters import FilterSet
 from rest_framework.exceptions import NotFound
 
-from .models import Forecast, Shops
+from .models import Shops
 
 
 class ShopFilter(FilterSet):
