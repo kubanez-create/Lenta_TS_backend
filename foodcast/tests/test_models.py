@@ -208,15 +208,6 @@ class ForecastModelTest(TestCase):
             store=ForecastModelTest.shop,
             sku=ForecastModelTest.product,
             forecast_date=date.today(),
-            sales_units=json.dumps(
-                {
-                    "2023-09-01": 1,
-                    "2023-09-02": 3,
-                    "2023-09-03": 7,
-                    "2023-09-04": 9,
-                    "2023-09-05": 0
-                }
-            )
         )
 
     def test_verbose_name(self):
@@ -226,7 +217,6 @@ class ForecastModelTest(TestCase):
             "store": "ТЦ",
             "sku": "SKU",
             "forecast_date": "Дата прогноза",
-            "sales_units": "Прогнозы продаж"
         }
 
         for field, expected_value in field_verboses.items():

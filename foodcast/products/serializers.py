@@ -46,7 +46,6 @@ class FilteredListSerializer(serializers.ListSerializer):
                 date__lte=self.context["request"].query_params.get("date_before"),
                 date__gte=self.context["request"].query_params.get("date_after"),
             )
-        # return super(FilteredListSerializer, self).to_representation(data)
         return {
             d.date.isoformat(): d.value for d in data.all()
         }

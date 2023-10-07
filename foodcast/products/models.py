@@ -129,14 +129,14 @@ class ForecastPoint(models.Model):
     value = models.PositiveIntegerField(verbose_name="Значение")
     forecast = models.ForeignKey(
         "Forecast",
-        verbose_name="",
+        verbose_name="Прогноз",
         related_name="forecast_point",
         on_delete=models.CASCADE
     )
 
 
 class Forecast(models.Model):
-    """Модель Прогнозов продаж"""
+    """Модель Прогнозов продаж."""
     store = models.ForeignKey(
         Shops,
         verbose_name="ТЦ",

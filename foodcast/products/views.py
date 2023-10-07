@@ -84,7 +84,7 @@ class ForecastViewSet(viewsets.ModelViewSet):
         df.to_excel(
             excel_file,
             index=False,
-            sheet_name=f'forecast_export',
+            sheet_name='forecast_export',
             startrow=2
         )
 

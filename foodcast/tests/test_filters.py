@@ -224,22 +224,22 @@ class ForecastFilterTests(TestCase):
         cls.p1 = ForecastPoint.objects.create(
             date=date(2023, 9, 3),
             value=3,
-            forecast=ForecastFilterTests.forecast
+            forecast=ForecastFilterTests.forecast,
         )
         cls.p2 = ForecastPoint.objects.create(
             date=date(2023, 9, 4),
             value=2,
-            forecast=ForecastFilterTests.forecast
+            forecast=ForecastFilterTests.forecast,
         )
         cls.p3 = ForecastPoint.objects.create(
             date=date(2023, 9, 5),
             value=1,
-            forecast=ForecastFilterTests.forecast
+            forecast=ForecastFilterTests.forecast,
         )
         cls.p4 = ForecastPoint.objects.create(
             date=date(2023, 9, 6),
             value=12,
-            forecast=ForecastFilterTests.forecast
+            forecast=ForecastFilterTests.forecast,
         )
 
     def setUp(self):
@@ -283,11 +283,9 @@ class ForecastFilterTests(TestCase):
         response = self.authorized_client.get(
             (
                 reverse("products:forecast-list", kwargs={"version": "v1"})
-                + f"?date_before={date(2023, 9, 1)}"
+                + f"?date_before={date(2023, 9, 5)}"
                 + f"&date_after={date(2023, 9, 3)}"
             )
         )
         response_json = json.loads(response.content).get("data")[0]
-        print(response_json)
-        print(type(json.loads(response_json["sales_units"])))
         self.assertEqual(len(response_json["sales_units"]), 3)
