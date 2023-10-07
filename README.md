@@ -32,7 +32,8 @@ docker compose exec backend python manage.py createsuperuser
 docker compose exec backend python manage.py collectstatic --no-input
 docker compose exec backend python manage.py loadcsv product /app/data/pr_df.csv
 docker compose exec backend python manage.py loadcsv shop /app/data/st_df.csv
-sudo docker compose exec backend python manage.py loadcsv sales /app/data/sales_df_train_trunkated.csv
+sudo docker compose exec backend python manage.py loadcsv sales /app/data/sales_df_train_truncated.csv
+sudo docker compose exec backend python manage.py loadcsv forecasts /app/data//sales_submission_trancated.csv
 ```
 
 После этого Вам должны быть доступны страницы с документацией http://localhost:8000/swagger/ и

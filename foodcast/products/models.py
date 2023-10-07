@@ -152,9 +152,6 @@ class Forecast(models.Model):
     forecast_date = models.DateField(
         verbose_name="Дата прогноза"
     )
-    # sales_units = models.JSONField(
-    #     verbose_name="Прогнозы продаж"
-    # )
 
     class Meta:
         verbose_name = 'Прогноз продаж'
