@@ -9,7 +9,7 @@ router = DefaultRouter()
 router.register(r"shops", ShopsViewSet, basename="shops")
 router.register(r"product", ProductViewSet, basename="product")
 router.register(r"forecast", ForecastViewSet, basename="forecast")
-router.register(r"statistic", StatisticViewSet, basename="statistic")
+router.register(r"statistics", StatisticViewSet, basename="statistics")
 
 urlpatterns = [
     re_path(r"^(?P<version>(v1|v2))/", include(router.urls)),
