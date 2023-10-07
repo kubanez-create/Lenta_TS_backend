@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .filters import ForecastFilter, ShopFilter
-from .models import Forecast, Product, Shops
+from .models import Forecast, ForecastPoint, Product, Shops
 from .serializers import (
     DataSerializer,
     ProductSerializer,
@@ -63,20 +63,26 @@ class ForecastViewSet(viewsets.ModelViewSet):
         response_data = {'data': serializer.data}
         return Response(response_data)
 
-    @action(detail=False, methods=['get'])
-    def excel_forecast_download(self, request):
-        quseryset = self.get_queryset()
+    @action(detail=False)
+    def excel_forecast_download(self, request, version):
+        quseryset = self.filter_queryset(self.get_queryset())
         data = quseryset.values(
             'store__title',
             'sku__sku',
             'forecast_date',
-            'sales_units')
+            'forecast_point'
+        )
         initial_data = list(data)
 
         for data in initial_data:
-            sales_units_str = data.pop('sales_units')
-            sales_units_dict = ast.literal_eval(sales_units_str)
-            data.update(sales_units_dict)
+            fc_point_id = data.pop('forecast_point')
+            fc_data = ForecastPoint.objects.get(id=fc_point_id)
+            data.update(
+                {
+                    "date": fc_data.date.isoformat(),
+                    "value": fc_data.value
+                }
+            )
 
         df = pd.DataFrame(initial_data)
         df = df.rename(columns={
@@ -92,7 +98,7 @@ class ForecastViewSet(viewsets.ModelViewSet):
         )
 
         response = HttpResponse(content_type='application/ms-excel')
-        response['Content-Disposition'] = 'attachment; filename="forecast_data.xlsx"'
+        response['Content-Disposition'] = 'attachment; filename=forecast_data.xlsx'
         excel_file.seek(0)
         response.write(excel_file.read())
 
