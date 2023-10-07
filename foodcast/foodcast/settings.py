@@ -66,7 +66,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodcast.wsgi.application'
 
-print(os.getenv("DEVELOPMENT"), bool(os.getenv("DEVELOPMENT")))
 if os.getenv("DEVELOPMENT"):
     DATABASES = {
         'default': {

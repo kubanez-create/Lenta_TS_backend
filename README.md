@@ -18,6 +18,7 @@ POSTGRES_USER = postgres
 POSTGRES_PASSWORD = postgres
 DB_HOST = db
 DB_PORT = 5432
+DEVELOPMENT = 1
 ```
 
 Выполните команду `docker compose up -d --build`
