@@ -1,9 +1,9 @@
 import ast
+import io
 
+import pandas as pd
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
-import pandas as pd
-import io
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -12,7 +12,10 @@ from rest_framework.response import Response
 from .filters import ForecastFilter, ShopFilter
 from .models import Forecast, Product, Shops
 from .serializers import (
-    DataSerializer, ProductSerializer, ReadForecastSerializer, ShopsSerializer
+    DataSerializer,
+    ProductSerializer,
+    ReadForecastSerializer,
+    ShopsSerializer,
 )
 
 

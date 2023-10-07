@@ -1,6 +1,5 @@
+from products.models import DataPoint, Sales
 from rest_framework import serializers
-
-from products.models import Sales, DataPoint
 
 
 class FilteredListSerializer(serializers.ListSerializer):

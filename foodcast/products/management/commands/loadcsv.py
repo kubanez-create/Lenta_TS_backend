@@ -3,8 +3,7 @@ import csv
 from datetime import datetime
 
 from django.core.management.base import BaseCommand, CommandError
-
-from products.models import DataPoint, Product, Shops, Sales
+from products.models import DataPoint, Product, Sales, Shops
 
 COMMANDS = {"product": Product, "shop": Shops, "sales": None}
 

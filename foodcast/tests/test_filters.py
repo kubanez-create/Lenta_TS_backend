@@ -1,19 +1,11 @@
 import json
-from datetime import datetime, date
+from datetime import date, datetime
 
 from django.contrib.auth import get_user_model
-from django.test import Client, TestCase
 from django.core.cache import cache
+from django.test import Client, TestCase
 from django.urls import reverse
-
-from products.models import (
-    DataPoint,
-    Forecast,
-    ForecastPoint,
-    Product,
-    Sales,
-    Shops
-)
+from products.models import DataPoint, Forecast, ForecastPoint, Product, Sales, Shops
 
 User = get_user_model()
 

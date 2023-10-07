@@ -1,14 +1,15 @@
-from rest_framework import serializers
+from datetime import date
+
 from django.shortcuts import get_object_or_404
+from rest_framework import serializers
 
 from .models import Forecast, ForecastPoint, Product, Shops
-
 
 BATCH_FORECAST_TO_CREATE = 200
 
 
 class ShopsSerializer(serializers.ModelSerializer):
-    """Cериализатор обратобки Магазинов ТК"""
+    """Cериализатор обратобки Магазинов ТК."""
 
     class Meta:
         model = Shops
@@ -24,7 +25,7 @@ class ShopsSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    """Сериализатор обработки товаров"""
+    """Сериализатор обработки товаров."""
 
     class Meta:
         model = Product
@@ -61,7 +62,7 @@ class ForecastPointSerializer(serializers.ModelSerializer):
 
 
 class ReadForecastSerializer(serializers.ModelSerializer):
-    """Сериализатор обработки прогнозов"""
+    """Сериализатор обработки прогнозов."""
     store = serializers.PrimaryKeyRelatedField(
         queryset=Forecast.objects.all(),
         source='store.title'
@@ -85,13 +86,13 @@ class ReadForecastSerializer(serializers.ModelSerializer):
 
 class ForecastSerializer(serializers.Serializer):
     sku = serializers.CharField()
-    sales_units = serializers.JSONField()
+    sales_units = ForecastPointSerializer()
 
 
 class DataItemSerializer(serializers.Serializer):
     store = serializers.CharField()
     forecast_date = serializers.DateField()
-    forecast = ForecastSerializer()
+    forecast = ForecastSerializer(many=True, source="forecast_point")
 
     def validate_forecast_date(self, value):
         dates_created = Forecast.objects.values_list('forecast_date', flat=True)
@@ -105,7 +106,19 @@ class DataItemSerializer(serializers.Serializer):
             "forecast_date": obj.forecast_date,
             "forecast": {
                 "sku": obj.sku_id,
-                "sales_units": obj.sales_units
+                "sales_units": {
+                    d.date.isoformat(): d.value for d in obj.forecast_point.all()
+                }
+            }
+        }
+
+    def to_internal_value(self, data):
+        return {
+            "store": data.get("store"),
+            "forecast_date": data.get("forecast_date"),
+            "forecast": {
+                "sku": data.get("forecast").get("sku"),
+                "sales_units": [data.get("forecast").get("sales_units").items()]
             }
         }
 
@@ -113,23 +126,30 @@ class DataItemSerializer(serializers.Serializer):
 class DataSerializer(serializers.Serializer):
     data = serializers.ListField(child=DataItemSerializer())
 
+
+
     def create(self, validated_data):
         print(validated_data)
-        # data = validated_data.pop('data')
         forecast_to_create = []
 
         for item in validated_data['data']:
             store, created = Shops.objects.get_or_create(title=item.get('store'))
             sku = get_object_or_404(Product, sku=str(item.get('forecast').get('sku')))
-            bulk_data = Forecast(
+            new_forecast = Forecast.objects.create(
                 store=store,
                 forecast_date=str(item.get('forecast_date')),
                 sku=sku,
-                sales_units=str(item.get('forecast').get('sales_units'))
             )
-            forecast_to_create.append(bulk_data)
+            forecast_points = [
+                ForecastPoint(
+                    date=date.fromisoformat(dat),
+                    value=val,
+                    forecast=new_forecast)
+                    for dat, val in item.get("forecast").get("sales_units")[0]
+            ]
+            ForecastPoint.objects.bulk_create(forecast_points, BATCH_FORECAST_TO_CREATE)
+            forecast_to_create.append(new_forecast)
 
-        Forecast.objects.bulk_create(forecast_to_create, BATCH_FORECAST_TO_CREATE)
 
         return {'data': forecast_to_create}
 
