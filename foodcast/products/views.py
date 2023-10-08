@@ -8,6 +8,8 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
 
 from .filters import ForecastFilter, ShopFilter
 from .models import Forecast, Product, Shops
@@ -16,6 +18,7 @@ from .serializers import (
     ProductSerializer,
     ReadForecastSerializer,
     ShopsSerializer,
+    StatisticsSerializer
 )
 
 
@@ -97,3 +100,17 @@ class ForecastViewSet(viewsets.ModelViewSet):
         response.write(excel_file.read())
 
         return response
+
+
+class StatisticView(APIView):
+    """
+    View for calculation of statistics.
+
+    * Requires token authentication.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None, **kwargs):
+        serializer = StatisticsSerializer(request.query_params)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

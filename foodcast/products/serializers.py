@@ -1,13 +1,16 @@
 from datetime import date
 
+from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 import numpy as np
 from rest_framework import serializers
 
-from .models import Forecast, ForecastPoint, Product, Shops, DataPoint
+from .models import DataPoint, Forecast, ForecastPoint, Product, Sales, Shops
 
 BATCH_FORECAST_TO_CREATE = 200
 
+def wape(actual, pred):
+    return sum(abs(actual - pred) / sum(abs(actual)))
 
 class ShopsSerializer(serializers.ModelSerializer):
     """Cериализатор обратобки Магазинов ТК."""
@@ -155,69 +158,101 @@ class DataSerializer(serializers.Serializer):
         return {'data': forecast_to_create}
 
 
-class StatisticsSerializer(serializers.ModelSerializer):
-    store = serializers.PrimaryKeyRelatedField(
-        queryset=Forecast.objects.all(),
-        source='store.title'
-    )
-    sku = serializers.PrimaryKeyRelatedField(
-        queryset=Product.objects.all(),
-        source='sku.sku'
-    )
-    forecast_value = serializers.SerializerMethodField()
-    fact_sales = serializers.SerializerMethodField(read_only=True)
-    difference_value = serializers.SerializerMethodField(read_only=True)
-    wape_value = serializers.SerializerMethodField(read_only=True)
+class StatisticsSerializer(serializers.Serializer):
+    sales_and_forecast_objects = serializers.SerializerMethodField(
+        read_only=True)
 
-    class Meta:
-        list_serializer_class = FilteredListSerializer
-        model = DataPoint
-        exclude = [
-            "id",
-            "sales_type",
-            "sales_units",
-            "sales_units_promo",
-            "sales_rub",
-            "sales_rub_promo",
-        ]
+    def get_sales_and_forecast_objects(self, obj):
+        store = obj.get("store")
+        group = obj.get("group")
+        category = obj.get("category")
+        subcategory = obj.get("subcategory")
+        date_before = obj.get("date_before")
+        date_after = obj.get("date_after")
 
-    def get_fact_sales(self, obj):
-        sku = obj.sku
-        fact_sales_count = DataPoint.objects.filter(sku=sku).count()
-        return fact_sales_count
+        fc_queryset = ForecastPoint.objects.all()
+        sale_queryset = DataPoint.objects.all()
+        if store:
+            fc_queryset = fc_queryset.filter(forecast__store=store)
+            sale_queryset = sale_queryset.filter(sale__store=store)
+        if group:
+            fc_queryset = fc_queryset.filter(forecast__sku__group=group)
+            sale_queryset = sale_queryset.filter(sale__SKU__group=group)
+        if category:
+            fc_queryset = fc_queryset.filter(forecast__sku__category=category)
+            sale_queryset = sale_queryset.filter(sale__SKU__category=category)
+        if subcategory:
+            fc_queryset = fc_queryset.filter(
+                forecast__sku__subcategory=subcategory
+            )
+            sale_queryset = sale_queryset.filter(
+                sale__SKU__subcategory=subcategory
+            )
 
-    def get_forecast_value(self, obj):
-        forecast = obj.forecast
-        date_before = self.context["request"].query_params.get("date_before")
-        date_after = self.context["request"].query_params.get("date_after")
+        if date_after and date_before:
+            fc_queryset = fc_queryset.filter(
+                date__lte=date_before, date__gte=date_after
+            )
+            sale_queryset = sale_queryset.filter(
+                date__lte=date_before, date__gte=date_after
+            )
+        fc_queryset = list(fc_queryset.order_by("date").values())
+        sale_queryset = list(sale_queryset.order_by("date").values())
+        # in case we have only predicted (or actual) value for some date
+        # we keep present value and put None in place of the other
+        merged_queryset = []
+        while fc_queryset and sale_queryset:
+            if fc_queryset[-1]["date"] == sale_queryset[-1]["date"]:
+                merged_queryset.append(
+                    (fc_queryset.pop(), sale_queryset.pop())
+                )
+            elif fc_queryset[-1]["date"] > sale_queryset[-1]["date"]:
+                merged_queryset.append((fc_queryset.pop(), None))
+            else:
+                merged_queryset.append((None, sale_queryset.pop()))
 
-        queryset = ForecastPoint.objects.filter(forecast=forecast)
+        if fc_queryset:
+            merged_queryset.append((fc_queryset.pop(), None))
+        if sale_queryset:
+            merged_queryset.append((None, sale_queryset.pop()))
 
-        if date_before:
-            queryset = queryset.filter(date__lte=date_before)
+        result = []
+        for fc, sale in merged_queryset[::-1]:
+            if fc and sale:
+                result.append(
+                    {
+                        "store": Forecast.objects.get(id=fc["forecast_id"]).store__title,
+                        "sku": Forecast.objects.get(id=fc["forecast_id"]).sku__sku,
+                        "date": fc.get("date"),
+                        "diff": abs(
+                            fc.get("value") - (sale.get("sales_units")
+                            + sale.get("sales_units_promo"))
+                        ),
+                        "wape": wape(
+                            (sale.get("sales_units") + sale.get("sales_units_promo")),
+                             fc.get("value")
+                        )
+                    }
+                )
+            if fc:
+                result.append(
+                    {
+                        "store": Forecast.objects.get(id=fc["forecast_id"]).store_id,
+                        "sku": Forecast.objects.get(id=fc["forecast_id"]).sku.sku,
+                        "date": fc["date"],
+                        "diff": None,
+                        "wape": None
+                    }
+                )
+            if sale:
+                result.append(
+                    {
+                        "store": Sales.objects.get(id=sale["sale_id"]).store_id,
+                        "sku": Sales.objects.get(id=sale["sale_id"]).SKU.sku,
+                        "date": sale["date"],
+                        "diff": None,
+                        "wape": None
+                    }
+                )
 
-        if date_after:
-            queryset = queryset.filter(date__gte=date_after)
-
-        forecast_value_sum = queryset.aggregate(Sum("value"))
-
-        return forecast_value_sum
-
-    def get_difference_value(self, obj):
-        fact = self.get_fact_sales(obj)
-        forecast = self.get_forecast_value(obj)
-        return fact - forecast
-
-    def get_wape_value(self, obj):
-        fact = self.get_fact_sales(obj)
-        forecast = self.get_forecast_value(obj)
-
-        if fact == 0:
-            return 0.0
-
-        fact_sales = np.array(fact)
-        forecast_value = np.array(forecast)
-        absolute_percentage_error = np.abs(fact_sales - forecast_value) / fact_sales
-        wape = np.mean(absolute_percentage_error) * 100.0
-
-        return wape
+        return result
