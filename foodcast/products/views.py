@@ -12,7 +12,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 
 from .filters import ForecastFilter, ShopFilter
-from .models import Forecast, Product, Shops
+from .models import Forecast, ForecastPoint, Product, Shops
 from .serializers import (
     DataSerializer,
     ProductSerializer,
@@ -101,7 +101,7 @@ class ForecastViewSet(viewsets.ModelViewSet):
         )
 
         response = HttpResponse(content_type='application/ms-excel')
-        response['Content-Disposition'] = 'attachment; filename="forecast_data.xlsx"'
+        response['Content-Disposition'] = 'attachment; filename=forecast_data.xlsx'
         excel_file.seek(0)
         response.write(excel_file.read())
 

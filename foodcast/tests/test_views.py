@@ -168,7 +168,6 @@ class StatisticsViewTests(TestCase):
                 kwargs={"version": "v1"},
             )
         )
-        print(response.content)
         self.assertEquals(
             json.loads(response.content).get("sales_and_forecast_objects")[0],
             {
