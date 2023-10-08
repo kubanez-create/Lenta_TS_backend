@@ -1,8 +1,6 @@
 from datetime import date
 
-from django.db.models import Sum
 from django.shortcuts import get_object_or_404
-import numpy as np
 from rest_framework import serializers
 
 from .models import DataPoint, Forecast, ForecastPoint, Product, Sales, Shops
@@ -10,7 +8,8 @@ from .models import DataPoint, Forecast, ForecastPoint, Product, Sales, Shops
 BATCH_FORECAST_TO_CREATE = 200
 
 def wape(actual, pred):
-    return sum(abs(actual - pred) / sum(abs(actual)))
+    numerator = abs(actual - pred)
+    return numerator / abs(actual)
 
 class ShopsSerializer(serializers.ModelSerializer):
     """Cериализатор обратобки Магазинов ТК."""
@@ -221,17 +220,17 @@ class StatisticsSerializer(serializers.Serializer):
             if fc and sale:
                 result.append(
                     {
-                        "store": Forecast.objects.get(id=fc["forecast_id"]).store__title,
-                        "sku": Forecast.objects.get(id=fc["forecast_id"]).sku__sku,
+                        "store": Forecast.objects.get(id=fc["forecast_id"]).store_id,
+                        "sku": Forecast.objects.get(id=fc["forecast_id"]).sku.sku,
                         "date": fc.get("date"),
                         "diff": abs(
                             fc.get("value") - (sale.get("sales_units")
                             + sale.get("sales_units_promo"))
                         ),
-                        "wape": wape(
+                        "wape": round(wape(
                             (sale.get("sales_units") + sale.get("sales_units_promo")),
                              fc.get("value")
-                        )
+                        ), ndigits=3)
                     }
                 )
             if fc:
