@@ -8,6 +8,8 @@ from .models import DataPoint, Forecast, ForecastPoint, Product, Sales, Shops
 BATCH_FORECAST_TO_CREATE = 200
 
 def wape(actual, pred):
+    if actual == 0:
+        return 0
     numerator = abs(actual - pred)
     return numerator / abs(actual)
 
