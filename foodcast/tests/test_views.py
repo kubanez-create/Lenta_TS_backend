@@ -1,3 +1,4 @@
+import json
 from datetime import date
 
 from django.contrib.auth import get_user_model
@@ -167,5 +168,14 @@ class StatisticsViewTests(TestCase):
                 kwargs={"version": "v1"},
             )
         )
-        print(response)
-        self.assertEquals(response.status_code, 200)
+        print(response.content)
+        self.assertEquals(
+            json.loads(response.content).get("sales_and_forecast_objects")[0],
+            {
+                "store":"1aa057313c28fa4a40c5bc084b11d276",
+                "sku":"fd064933250b0bfe4f926b867b0a5ec8",
+                "date":"2023-09-03",
+                "diff":82738,
+                "wape":1.0
+            }
+        )
