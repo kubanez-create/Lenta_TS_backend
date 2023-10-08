@@ -66,20 +66,26 @@ class ForecastViewSet(viewsets.ModelViewSet):
         response_data = {'data': serializer.data}
         return Response(response_data)
 
-    @action(detail=False, methods=['get'])
-    def excel_forecast_download(self, request):
-        quseryset = self.get_queryset()
+    @action(detail=False)
+    def excel_forecast_download(self, request, version):
+        quseryset = self.filter_queryset(self.get_queryset())
         data = quseryset.values(
             'store__title',
             'sku__sku',
             'forecast_date',
-            'sales_units')
+            'forecast_point'
+        )
         initial_data = list(data)
 
         for data in initial_data:
-            sales_units_str = data.pop('sales_units')
-            sales_units_dict = ast.literal_eval(sales_units_str)
-            data.update(sales_units_dict)
+            fc_point_id = data.pop('forecast_point')
+            fc_data = ForecastPoint.objects.get(id=fc_point_id)
+            data.update(
+                {
+                    "date": fc_data.date.isoformat(),
+                    "value": fc_data.value
+                }
+            )
 
         df = pd.DataFrame(initial_data)
         df = df.rename(columns={

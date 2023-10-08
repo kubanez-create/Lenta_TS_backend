@@ -56,10 +56,3 @@ class ForecastFilter(FilterSet):
     group = MultipleFilter(field_name="sku__group")
     category = MultipleFilter(field_name="sku__category")
     subcategory = MultipleFilter(field_name="sku__subcategory")
-
-
-class StatisticFilter(FilterSet):
-    store = MultipleFilter(field_name="store")
-    group = MultipleFilter(field_name="sku__group")
-    category = MultipleFilter(field_name="sku__category")
-    subcategory = MultipleFilter(field_name="sku__subcategory")
