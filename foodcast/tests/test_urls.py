@@ -3,6 +3,7 @@ from http import HTTPStatus
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.test import Client, TestCase
+from django.urls import reverse
 
 User = get_user_model()
 
@@ -18,10 +19,16 @@ class URLsTests(TestCase):
         super().setUpClass()
         cls.user = User.objects.create_user(email="a@b.com")
         cls.urls = {
-            "sales": "/api/v1/sales/",
-            "shops": "/api/v1/shops/",
-            "product": "/api/v1/product/",
-            "forecast": "/api/v1/forecast/",
+            "sales": reverse("core:sales", kwargs={"version": "v1"}),
+            "product": reverse(
+                "products:product-list", kwargs={"version": "v1"}
+            ),
+            "forecast": reverse(
+                "products:forecast-list", kwargs={"version": "v1"}
+            ),
+            "forecast_excel": reverse(
+                "products:statistics", kwargs={"version": "v1"}
+            ),
         }
 
     def setUp(self):
@@ -30,13 +37,7 @@ class URLsTests(TestCase):
         self.authorized_client.force_login(URLsTests.user)
         cache.clear()
 
-    # Test throws an error:
-    # FAIL: test_authorized_user_can_reach_urls (tests.test_urls.URLsTests) (url_name='shops')
-    # ----------------------------------------------------------------------
-    # Traceback (most recent call last):
-    # File "/home/kubanez/Dev/Lenta_TS_backend/foodcast/tests/test_urls.py", line 35, in test_authorized_user_can_reach_urls
-    #   self.assertEqual(response.status_code, HTTPStatus.OK.value)
-    # AssertionError: 404 != 200
+
     def test_authorized_user_can_reach_urls(self):
         for name, url in URLsTests.urls.items():
             with self.subTest(url_name=name):
