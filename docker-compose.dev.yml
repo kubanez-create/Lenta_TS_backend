@@ -25,6 +25,16 @@ services:
     ports:
       - "8000:8000"
 
+  ds:
+    container_name: ds
+    build:
+      context: ./DS
+      dockerfile: Dockerfile
+    volumes:
+      - ./DS:/app
+    depends_on:
+      - backend
+
 volumes:
   postgres_data:
   static_value:

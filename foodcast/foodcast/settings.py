@@ -66,7 +66,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodcast.wsgi.application'
 
-if os.getenv("DEVELOPMENT"):
+if os.getenv("DEVELOPMENT") == 'true':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
