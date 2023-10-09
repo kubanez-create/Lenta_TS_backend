@@ -7,6 +7,9 @@
  - просматривать и выгружать в файл excel прогноз продаж на продукцию собственного производства;
  - просматривать фактические продажи, предсказанные продажи и точность прошлых прогнозов
 
+Помимо этого в автоматическом режиме ежедневно раз в день генерируются свежие прогнозные значения продаж в разрезе
+магазин/скю и сохраняются в базу данных.
+
 ## Стек технологий
 - Python
 - Django
@@ -47,8 +50,11 @@ docker compose exec backend python manage.py createsuperuser
 docker compose exec backend python manage.py collectstatic --no-input
 docker compose exec backend python manage.py loadcsv product /app/data/pr_df.csv
 docker compose exec backend python manage.py loadcsv shop /app/data/st_df.csv
-docker compose exec backend python manage.py loadcsv sales /app/data/sales_df_train_truncated.csv
-docker compose exec backend python manage.py loadcsv forecasts /app/data/sales_submission_trancated.csv
+# данные фактических продаж и прогнозные значения ограничены двумя магазинами
+# c id 53e19f3dbb211f20b20b45668303c1b6, 42a0e188f5033bc65bf8d78622277c4e для
+# ускорения заполнения базы данных
+docker compose exec backend python manage.py loadcsv sales /app/data/sales_2_st.csv
+docker compose exec backend python manage.py loadcsv forecasts /app/data/predictions_2_st.csv
 ```
 6. После этого Вам должны быть доступны страницы с документацией http://localhost:8000/swagger/ и админка http://localhost:8000/admin/.
 
