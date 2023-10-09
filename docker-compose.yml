@@ -10,7 +10,7 @@ services:
 
   backend:
     container_name: backend
-    image: kubanez/foodcast_backend:v1.3
+    image: kubanez/foodcast_backend:v1.4
     volumes:
       - ./foodcast:/app
       - static_value:/app/static/
