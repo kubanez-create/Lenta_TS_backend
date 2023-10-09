@@ -35,8 +35,9 @@ POSTGRES_PASSWORD=<пароль_к_базе_данных>
 DB_HOST=<хост_базы_данных>
 DB_PORT=<порт_базы_данных>
 # Переменная ответственная за переключение используемой базы данных
-# на локальной машине мы пользуемся sqlite3, в докере - postgresql
-DEVELOPMENT = 0
+# на локальной машине мы пользуемся sqlite3 (true), в докере - postgresql
+# (false)
+DEVELOPMENT = false
 ```
 5. Из корневой директории выполните команду `docker compose up -d --build`;
 После запуска контейнера последовательно выполните команды (возможно потребуется прописать sudo)
@@ -49,8 +50,7 @@ docker compose exec backend python manage.py loadcsv shop /app/data/st_df.csv
 docker compose exec backend python manage.py loadcsv sales /app/data/sales_df_train_truncated.csv
 docker compose exec backend python manage.py loadcsv forecasts /app/data/sales_submission_trancated.csv
 ```
-6. После этого Вам должны быть доступны страницы с документацией http://localhost:8000/swagger/ и
-админка http://localhost:8000/admin/.
+6. После этого Вам должны быть доступны страницы с документацией http://localhost:8000/swagger/ и админка http://localhost:8000/admin/.
 
 Получить токен можно как в swagger через обращение к /api/v1/auth/token/login, так и в админке в разделе Токенs.
 Чтобы авторизоваться в swagger вставьте в поле Authorize
