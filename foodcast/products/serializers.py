@@ -7,14 +7,14 @@ from .models import DataPoint, Forecast, ForecastPoint, Product, Sales, Shops
 
 BATCH_FORECAST_TO_CREATE = 200
 
-def wape(actual, pred):
+def wape(actual: int, pred: int) -> int:
     if actual == 0:
         return 0
     numerator = abs(actual - pred)
     return numerator / abs(actual)
 
 class ShopsSerializer(serializers.ModelSerializer):
-    """Cериализатор обратобки Магазинов ТК."""
+    """Cериализатор обработки магазинов торговой сети."""
 
     class Meta:
         model = Shops
@@ -164,6 +164,13 @@ class StatisticsSerializer(serializers.Serializer):
         read_only=True)
 
     def get_sales_and_forecast_objects(self, obj):
+        """Get historic sales and forecast values.
+
+        In order to show statistics we need to first filter all
+        ForecastPoint and DataPoint (historic sales) objects by
+        store, group, category, subcategory and period and then
+        return a neat json list with our data. 
+        """
         store = obj.get("store")
         group = obj.get("group")
         category = obj.get("category")
@@ -199,8 +206,10 @@ class StatisticsSerializer(serializers.Serializer):
             )
         fc_queryset = list(fc_queryset.order_by("date").values())
         sale_queryset = list(sale_queryset.order_by("date").values())
-        # in case we have only predicted (or actual) value for some date
+
+        # in case we have only predicted (or actual) value for some day
         # we keep present value and put None in place of the other
+
         merged_queryset = []
         while fc_queryset and sale_queryset:
             if fc_queryset[-1]["date"] == sale_queryset[-1]["date"]:
